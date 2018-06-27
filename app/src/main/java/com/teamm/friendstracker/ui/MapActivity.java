@@ -1,7 +1,9 @@
-package com.teamm.friendstracker;
+package com.teamm.friendstracker.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.teamm.friendstracker.R;
 
 public class MapActivity extends AppCompatActivity {
 
