@@ -1,12 +1,4 @@
 <resources>
     <string name="app_name">FriendsTracker</string>
-    <string name="authors">Команда разработки M</string>
-
-    <string-array name="navigation_title_array">
-        <item>user@email.ru</item>
-        <item>Друзья</item>
-        <item>Выход</item>
-    </string-array>
-
-
+    <string name="title_activity_map">Трекер друзей</string>
 </resources>
