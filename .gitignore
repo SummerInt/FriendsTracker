@@ -9,3 +9,5 @@
 /captures
 .externalNativeBuild
 /java
+
+strings_debug.xml
