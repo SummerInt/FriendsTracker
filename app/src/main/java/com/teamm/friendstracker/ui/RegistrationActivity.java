@@ -140,7 +140,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             mAuth.signInWithEmailAndPassword(email, password);
                             writeNewUser(Email.getText().toString(), Name.getText().toString(), Surname.getText().toString());
                             Toast.makeText(RegistrationActivity.this, "Регистрация успешна", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(RegistrationActivity.this, MapActivity.class);
+                            Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                             startActivity(intent);
 
                         } else
