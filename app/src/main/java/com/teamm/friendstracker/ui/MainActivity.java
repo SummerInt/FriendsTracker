@@ -1,6 +1,7 @@
 package com.teamm.friendstracker.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,11 +14,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.teamm.friendstracker.R;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+    static final int RED_PROF_ACTIVITY_REQUEST = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,19 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        LinearLayout menuHeadLayout = (LinearLayout) header.findViewById(R.id.mHeadLayout);
+
+        menuHeadLayout.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               if (v.getId() == R.id.mHeadLayout) {
+                   Intent intent = new Intent(MainActivity.this, ProfileEditorActivity.class);
+                   startActivityForResult(intent, RED_PROF_ACTIVITY_REQUEST);
+               }
+           }
+       });
+
     }
 
     @Override
@@ -79,7 +97,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_friends) {
-            // intenr friend
+            // intent friend
         } else if (id == R.id.nav_exit) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
@@ -88,4 +106,26 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case RED_PROF_ACTIVITY_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    ImageView iv = (ImageView) findViewById(R.id.ivPhoto);
+                    TextView tvName  = (TextView) findViewById(R.id.tvName);
+                    Uri selectedImage = Uri.parse(data.getStringExtra("photo"));
+                    iv.setImageURI(null);
+                    iv.setImageURI(selectedImage);
+                    String name = data.getStringExtra("name");
+                    String surname = data.getStringExtra("surname");
+                    tvName.setText(name+" "+surname);
+                }
+                break;
+        }
+    }
+
+
 }

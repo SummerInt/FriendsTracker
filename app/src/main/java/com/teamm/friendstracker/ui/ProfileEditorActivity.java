@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.teamm.friendstracker.R;
 
@@ -38,7 +39,13 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
                 startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
                 break;
             case R.id.bAccept:
-                //сохранить и применить данные
+                EditText etNewName = (EditText) findViewById(R.id.etNewName);
+                EditText etNewSurname = (EditText) findViewById(R.id.etNewSurname);
+                Intent intent = new Intent(this,MainActivity.class);
+                intent.putExtra("name", etNewName.getText().toString());
+                intent.putExtra("surname", etNewSurname.getText().toString());
+                intent.putExtra("photo", selectedImage.toString());
+                setResult(RESULT_OK, intent);
                 finish();
                 break;
             case R.id.bExit:
