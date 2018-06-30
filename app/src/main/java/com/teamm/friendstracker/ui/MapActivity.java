@@ -25,23 +25,13 @@ public class MapActivity extends FragmentActivity implements MapView, OnMapReady
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        //DrawerLayout navigationLayout = findViewById(R.id.navigation_layout);
-        ListView navigationListView = findViewById(R.id.navigation_list_view);
-        String[] navigationTitles = getResources().getStringArray(R.array.navigation_title_array);
-
-        navigationListView.setAdapter(new ArrayAdapter<>(this,
-                R.layout.navigation_list_item, navigationTitles));
-        //navigationListView.setOnItemClickListener(new DrawerItemClickListener());
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        GoogleMap mMap = googleMap;
-
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
