@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.teamm.friendstracker.R;
 
@@ -44,7 +45,11 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
                 Intent intent = new Intent(this,MainActivity.class);
                 intent.putExtra("name", etNewName.getText().toString());
                 intent.putExtra("surname", etNewSurname.getText().toString());
-                intent.putExtra("photo", selectedImage.toString());
+                if(selectedImage != null){
+                    intent.putExtra("photo", selectedImage.toString());
+                }else {
+                    intent.putExtra("photo", "");
+                }
                 setResult(RESULT_OK, intent);
                 finish();
                 break;
@@ -61,8 +66,9 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
         if (requestCode == GALLERY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 selectedImage = data.getData();
-                //iv.setImageURI(null);
-                //iv.setImageURI(selectedImage);
+                ImageView iv2 = (ImageView)findViewById(R.id.imageView2);
+                iv2.setImageURI(null);
+                iv2.setImageURI(selectedImage);
             }
         }
     }

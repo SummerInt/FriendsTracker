@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
+
         LinearLayout menuHeadLayout = (LinearLayout) header.findViewById(R.id.mHeadLayout);
 
         menuHeadLayout.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
            public void onClick(View v) {
                if (v.getId() == R.id.mHeadLayout) {
                    Intent intent = new Intent(MainActivity.this, ProfileEditorActivity.class);
+                   setResult(RESULT_OK, intent);
                    startActivityForResult(intent, RED_PROF_ACTIVITY_REQUEST);
                }
            }
@@ -116,9 +118,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (resultCode == RESULT_OK) {
                     ImageView iv = (ImageView) findViewById(R.id.ivPhoto);
                     TextView tvName  = (TextView) findViewById(R.id.tvName);
-                    Uri selectedImage = Uri.parse(data.getStringExtra("photo"));
-                    iv.setImageURI(null);
-                    iv.setImageURI(selectedImage);
+                    String uriStr = data.getStringExtra("photo");
+                    if(!uriStr.isEmpty()){
+                        Uri selectedImage = Uri.parse(uriStr);
+                        iv.setImageURI(null);
+                        iv.setImageURI(selectedImage);
+                    }
                     String name = data.getStringExtra("name");
                     String surname = data.getStringExtra("surname");
                     tvName.setText(name+" "+surname);
