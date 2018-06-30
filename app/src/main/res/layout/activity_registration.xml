@@ -9,6 +9,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -144,8 +147,8 @@
             android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:text="Начать"
-            android:onClick="onClick"/>
+            android:onClick="onClick"
+            android:text="Зарегистрироваться" />
 
         <Button
             android:id="@+id/bCancel"
@@ -153,8 +156,8 @@
             android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:text="Отмена"
-            android:onClick="onClick"/>
+            android:onClick="onClick"
+            android:text="Отмена" />
 
         <LinearLayout
             android:layout_width="match_parent"

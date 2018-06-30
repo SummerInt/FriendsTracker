@@ -23,9 +23,14 @@
         <activity
             android:name=".ui.RegistrationActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.MainActivity"
+        <activity
+            android:name=".ui.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.ProfileEditorActivity">
+            android:screenOrientation="portrait"
+        </activity>
     </application>
 
 </manifest>

@@ -9,7 +9,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageView"
@@ -80,16 +87,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Забыл пароль"
-                android:onClick="onClick"/>
+                android:onClick="onClick"
+                android:text="Забыл пароль" />
 
             <Button
                 android:id="@+id/bSignIn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Войти"
-                android:onClick="onClick"/>
+                android:onClick="onClick"
+                android:text="Войти" />
 
         </LinearLayout>
 
@@ -99,8 +106,8 @@
             android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:text="Зарегистрироваться"
-            android:onClick="onClick"/>
+            android:onClick="onClick"
+            android:text="Зарегистрироваться" />
 
         <LinearLayout
             android:layout_width="match_parent"
