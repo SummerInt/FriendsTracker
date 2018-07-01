@@ -4,5 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorNavigationBackground">#ca68fa5e</color>
+    <color name="colorVisibilityRadius">#0bccc8c8</color>
+    <color name="colorVisibilityRadius2">#30ff0000</color>
 </resources>
 

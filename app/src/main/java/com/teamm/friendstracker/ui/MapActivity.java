@@ -2,6 +2,7 @@ package com.teamm.friendstracker.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.view.MapView;
@@ -39,6 +41,10 @@ public class MapActivity extends FragmentActivity implements MapView, OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        map.setMinZoomPreference(10);
 
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -70,7 +76,7 @@ public class MapActivity extends FragmentActivity implements MapView, OnMapReady
 
         if (ActivityCompat
                 .checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, permissions, RESULT_FIRST_USER);
@@ -88,6 +94,13 @@ public class MapActivity extends FragmentActivity implements MapView, OnMapReady
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
         map.addMarker(new MarkerOptions().position(position).title("Я"));
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
+
+        map.addCircle(new CircleOptions()
+                .center(position)
+                .radius(15000)
+                .strokeColor(Color.BLACK)
+                .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
+                .strokeWidth(2));
     }
 
     @Override
