@@ -33,7 +33,9 @@
         <activity
             android:name=".ui.RegistrationActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.RedactionActivity"></activity>
+        <activity
+            android:name=".ui.RedactionActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
