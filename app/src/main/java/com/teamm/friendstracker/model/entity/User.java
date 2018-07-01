@@ -4,6 +4,7 @@ public class User {
     private String email;
     private String name;
     private String surname;
+    private String avatar;
 
     public User() {
 
@@ -37,5 +38,13 @@ public class User {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

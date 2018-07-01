@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.teamm.friendstracker.R;
+import com.teamm.friendstracker.model.db.DbManager;
 import com.teamm.friendstracker.model.entity.User;
 
 import java.util.regex.Matcher;
@@ -137,7 +138,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
                         if (task.isSuccessful()) {
-                            mAuth.signInWithEmailAndPassword(email, password);
+                            //mAuth.signInWithEmailAndPassword(email, password);
                             writeNewUser(Email.getText().toString(), Name.getText().toString(), Surname.getText().toString());
                             Toast.makeText(RegistrationActivity.this, "Регистрация успешна", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(RegistrationActivity.this, MapActivity.class);
@@ -155,9 +156,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
 
     private void writeNewUser(String email, String name, String surname) {
-        User user = new User(email, name, surname);
+        DbManager.user = new User(email, name, surname);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users");
-        myRef.child("users").child(users.getUid()).setValue(user);
+        myRef.child("users").child(users.getUid()).setValue(DbManager.user);
     }
 }
