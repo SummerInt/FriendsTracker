@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.teamm.friendstracker.R;
@@ -92,7 +93,12 @@ public class MapActivity extends FragmentActivity implements MapView, OnMapReady
     @Override
     public void onLocationChanged(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-        map.addMarker(new MarkerOptions().position(position).title("Я"));
+
+        map.addMarker(new MarkerOptions()
+                .position(position)
+                .snippet("Я")
+                /*.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))*/
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
 
         map.addCircle(new CircleOptions()
