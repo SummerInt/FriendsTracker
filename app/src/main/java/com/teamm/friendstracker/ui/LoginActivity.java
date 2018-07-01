@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    Intent intent = new Intent(LoginActivity.this,MapActivity.class);
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                     //startActivity(intent);
 
                 }
@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
 
-            Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             //startActivity(intent);
         }
         Email = (EditText) findViewById(R.id.etLogin);
@@ -157,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Aвторизация успешна", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                         } else
                             Toast.makeText(LoginActivity.this, "E-mail или пароль неверный", Toast.LENGTH_SHORT).show();
