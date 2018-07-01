@@ -16,6 +16,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.teamm.friendstracker.R;
+import com.teamm.friendstracker.model.db.DbManager;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                    //startActivity(intent);
+                    startActivity(intent);
 
                 }
 
@@ -53,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         if (user != null) {
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            //startActivity(intent);
+            startActivity(intent);
         }
         Email = (EditText) findViewById(R.id.etLogin);
         Password = (EditText) findViewById(R.id.etPasswrd);
@@ -157,6 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Aвторизация успешна", Toast.LENGTH_SHORT).show();
+                            DbManager.read();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                         } else

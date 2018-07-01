@@ -89,11 +89,11 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(Password.getText().toString().equals(Password2.getText().toString()))
+                    if(Password2.getText().toString().equals(Password.getText().toString()))
                         Password2.setBackgroundColor(Color.GREEN);
                     else {
-                        Password2.setBackgroundColor(Color.RED);
                         Toast.makeText(RegistrationActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
+                        Password2.setBackgroundColor(Color.RED);
                     }
                 }
             }
@@ -105,9 +105,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (hasFocus == false) {
                     if(isRightName(Name.getText().toString()))
                         Name.setBackgroundColor(Color.GREEN);
-                    else {
+                    else
                         Name.setBackgroundColor(Color.RED);
-                    }
                 }
             }
         });
@@ -118,9 +117,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (hasFocus == false) {
                     if(isRightSurname(Surname.getText().toString()))
                         Surname.setBackgroundColor(Color.GREEN);
-                    else {
+                    else
                         Surname.setBackgroundColor(Color.RED);
-                    }
                 }
             }
         });
@@ -135,7 +133,6 @@ public class RegistrationActivity extends AppCompatActivity {
             }
 
             case R.id.bCancel: {
-                super.onBackPressed();
                 break;
             }
         }
@@ -147,13 +144,14 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(RegistrationActivity.this, "Пароль не должен быть меньше 6 символов и не больше 30", Toast.LENGTH_SHORT).show();
             result = false;
         }
-        if (pass.equals(pass2) == false) {
-            result = false;
-            Toast.makeText(RegistrationActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
-        }
+
         if (containsIllegalsString(pass)) {
             Toast.makeText(RegistrationActivity.this, "Недопустимые символы в пароле", Toast.LENGTH_SHORT).show();
             result = false;
+        }
+        if (pass.equals(pass2) == false) {
+            Toast.makeText(RegistrationActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
+            return false;
         }
         return result;
     }
@@ -164,36 +162,12 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(RegistrationActivity.this, "Пароль не должен быть меньше 6 символов и не больше 30", Toast.LENGTH_SHORT).show();
             result = false;
         }
+
         if (containsIllegalsString(pass)) {
             Toast.makeText(RegistrationActivity.this, "Недопустимые символы в пароле", Toast.LENGTH_SHORT).show();
             result = false;
         }
-        return result;
-    }
 
-    private boolean isRightName(String name) {
-        boolean result = true;
-        if (name.length() < 1 || name.length() > 255) {
-            Toast.makeText(RegistrationActivity.this, "Имя не должен быть меньше 1 символа и не больше 255", Toast.LENGTH_SHORT).show();
-            result = false;
-        }
-        if (containsIllegalsString(name)) {
-            Toast.makeText(RegistrationActivity.this, "Недопустимые символы в имени", Toast.LENGTH_SHORT).show();
-            result = false;
-        }
-        return result;
-    }
-
-    private boolean isRightSurname(String surname) {
-        boolean result = true;
-        if (surname.length() < 1 || surname.length() > 255) {
-            Toast.makeText(RegistrationActivity.this, " Фамилия не должена быть меньше 1 символа и не больше 255", Toast.LENGTH_SHORT).show();
-            result = false;
-        }
-        if (containsIllegalsString(surname)) {
-            Toast.makeText(RegistrationActivity.this, "Недопустимые символы в фамилии", Toast.LENGTH_SHORT).show();
-            result = false;
-        }
         return result;
     }
 
@@ -203,12 +177,43 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(RegistrationActivity.this, "E-mail не должен быть меньше 6 символов и не больше 255", Toast.LENGTH_SHORT).show();
             result = false;
         }
+
         if (isValidEmail(em) == false) {
             Toast.makeText(RegistrationActivity.this, "E-mail неверно написан", Toast.LENGTH_SHORT).show();
             result = false;
         }
         if (containsIllegalsEmail(em)) {
             Toast.makeText(RegistrationActivity.this, "Недопустимые символы в E-mail", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        return result;
+    }
+
+    private boolean isRightName(String name) {
+        boolean result = true;
+        if (name.length() < 1 || name.length() > 255) {
+            Toast.makeText(RegistrationActivity.this, "Имя не может быть меньше 1 символа или больше 255", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (containsIllegalsString(name)) {
+            Toast.makeText(RegistrationActivity.this, "Недопустимые символы в имени", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        return result;
+    }
+
+    private boolean isRightSurname(String surname) {
+        boolean result = true;
+        if (surname.length() < 1 || surname.length() > 255) {
+            Toast.makeText(RegistrationActivity.this, "Фамилия не может быть меньше 1 символа или больше 255", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (containsIllegalsString(surname)) {
+            Toast.makeText(RegistrationActivity.this, "Недопустимые символы в фамилии", Toast.LENGTH_SHORT).show();
             result = false;
         }
 
@@ -233,22 +238,25 @@ public class RegistrationActivity extends AppCompatActivity {
 
     public void reg(final String email, final String password, final String password2, String name, String surname) {
         boolean result = true;
-        if (isRightPassword(password, password2) == false)
+        if (isRightPassword(password, password2))
             result = false;
-        if (isRightEmail(email) == false)
+
+        if (isRightEmail(email))
             result = false;
-        if (isRightName(name) == false)
+
+        if (isRightName(name))
             result = false;
-        if (isRightSurname(surname) == false)
+
+        if (isRightSurname(surname))
             result = false;
-    
-        if(result) {
+
+        if (result) {
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
 
                     if (task.isSuccessful()) {
-                        //mAuth.signInWithEmailAndPassword(email, password);
+                        mAuth.signInWithEmailAndPassword(email, password);
                         writeNewUser(Email.getText().toString(), Name.getText().toString(), Surname.getText().toString());
                         Toast.makeText(RegistrationActivity.this, "Регистрация успешна", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
@@ -265,7 +273,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
 
     private void writeNewUser(String email, String name, String surname) {
-        DbManager.user = new User(email, name, surname);
+        DbManager.user = new User(email, name, surname, false, true);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users");
         myRef.child("users").child(users.getUid()).setValue(DbManager.user);

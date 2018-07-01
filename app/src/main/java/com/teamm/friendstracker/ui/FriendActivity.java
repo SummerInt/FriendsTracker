@@ -37,12 +37,12 @@ public class FriendActivity extends AppCompatActivity {
 
     private Collection<User> getFriends() {
         return Arrays.asList(
-                new User("lol@mail.ru", "Иван", "Иванов"),
-                new User("sobaka@mail.ru", "Лена", "Колено"),
-                new User("parovoooz@mail.ru", "Антон", "Батон"),
-                new User("ded_moroz@mail.ru", "Глеб", "Хлеб"),
-                new User("kotik@mail.ru", "Вова", "Головадубова"),
-                new User("zhirnotik@mail.ru", "Лешка", "Макарошка")
+                new User("lol@mail.ru", "Иван", "Иванов",true,false),
+                new User("sobaka@mail.ru", "Лена", "Колено",false,false),
+                new User("parovoooz@mail.ru", "Антон", "Батон",false,true),
+                new User("ded_moroz@mail.ru", "Глеб", "Хлеб",true,true),
+                new User("kotik@mail.ru", "Вова", "Головадубова",false,true),
+                new User("zhirnotik@mail.ru", "Лешка", "Макарошка",true,false)
         );
     }
 
