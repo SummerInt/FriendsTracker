@@ -3,7 +3,7 @@
     <string name="authors">Команда разработки M</string>
 
     <string name="title_activity_map">Map</string>
-    <string name="google_maps_key" templateMegreStrategy="preserve" translatable="false">key</string>
+    <string name="google_maps_key" templateMegreStrategy="preserve" translatable="false">AIzaSyA8SgHBGWGC3zKJmFUb3EoezNKmldBbdnY</string>
 
     <string-array name="navigation_title_array">
         <item>user@email.ru</item>
