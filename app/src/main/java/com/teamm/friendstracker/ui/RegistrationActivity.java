@@ -239,16 +239,16 @@ public class RegistrationActivity extends AppCompatActivity {
 
     public void reg(final String email, final String password, final String password2, String name, String surname) {
         boolean result = true;
-        if (isRightPassword(password, password2))
+        if (isRightPassword(password, password2)==false)
             result = false;
 
-        if (isRightEmail(email))
+        if (isRightEmail(email)==false)
             result = false;
 
-        if (isRightName(name))
+        if (isRightName(name)==false)
             result = false;
 
-        if (isRightSurname(surname))
+        if (isRightSurname(surname)==false)
             result = false;
 
         if (result) {
@@ -277,6 +277,6 @@ public class RegistrationActivity extends AppCompatActivity {
         DbManager.user = new User(email, name, surname, false, true);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("FriendsTracker");
-        myRef.child("Users").child(users.getUid()).child("User").setValue(DbManager.user);
+        myRef.child("Users").child(users.getUid()).setValue(DbManager.user);
     }
 }

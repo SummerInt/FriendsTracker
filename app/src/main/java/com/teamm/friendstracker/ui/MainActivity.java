@@ -10,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -51,6 +52,30 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
     View header;
     GoogleMap map;
 
+    private int mInterval = 2000;
+    private Handler mHandler;
+    private Runnable mAdShower = new Runnable() {
+        @Override
+        public void run() {
+            try {
+
+                setProfileInfo();
+
+            } finally {
+                mHandler.postDelayed(mAdShower, mInterval);
+            }
+        }
+    };
+
+    private void startTask() {
+        mAdShower.run();
+    }
+
+    private void stopTask() {
+
+        mHandler.removeCallbacks(mAdShower);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
         mapFragment.getMapAsync(this);
 
         DbManager.read();
+        mHandler = new Handler();
+        startTask();
 
     }
 

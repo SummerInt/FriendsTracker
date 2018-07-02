@@ -148,9 +148,9 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
 
             case R.id.bExit: {
                 finish();
-                //DbManager.signOut();
-                //Intent intent = new Intent(ProfileEditorActivity.this, LoginActivity.class);
-                //startActivity(intent);
+//                DbManager.signOut();
+//                Intent intent = new Intent(ProfileEditorActivity.this, LoginActivity.class);
+//                startActivity(intent);
                 break;
             }
         }
