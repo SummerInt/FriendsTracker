@@ -133,6 +133,7 @@ public class RegistrationActivity extends AppCompatActivity {
             }
 
             case R.id.bCancel: {
+                finish();
                 break;
             }
         }

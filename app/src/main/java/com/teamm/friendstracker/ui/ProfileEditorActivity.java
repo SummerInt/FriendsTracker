@@ -138,7 +138,8 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
                             avatarSave();
                         }
                         DbManager.write();
-                        Toast.makeText(getApplicationContext(), "Сохранено", Toast.LENGTH_SHORT).show();
+                        finish();
+                        //Toast.makeText(getApplicationContext(), "Сохранено", Toast.LENGTH_SHORT).show();
                     }
                     else
                         isRightSurname(surname.getText().toString());
@@ -146,9 +147,10 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             }
 
             case R.id.bExit: {
-                DbManager.signOut();
-                Intent intent = new Intent(ProfileEditorActivity.this, LoginActivity.class);
-                startActivity(intent);
+                finish();
+                //DbManager.signOut();
+                //Intent intent = new Intent(ProfileEditorActivity.this, LoginActivity.class);
+                //startActivity(intent);
                 break;
             }
         }
