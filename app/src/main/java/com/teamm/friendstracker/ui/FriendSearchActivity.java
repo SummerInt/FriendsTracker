@@ -10,7 +10,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -33,23 +35,22 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
 
 
     private void loadResults() {
-        Collection<User> friends = getFriends();
+        ArrayList<User> friends = getFriends();
         adapter.setItems(friends);
     }
 
-    private Collection<User> getFriends() {
-        return Arrays.asList(
-                new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов", false, false),
-                new User("love_cat@mail.ru", "Лена", "Петрова", false, false),
-                new User("kotik@mail.ru", "Егор", "Николаев", false, false),
-                new User("nashe_vse@mail.ru", "Александр", "Пушкин", false, false)
-        );
+    private ArrayList<User> getFriends() {
+        ArrayList<User> friends = new ArrayList<User>();
+        friends.add(new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов", false, false));
+        friends.add(new User("love_cat@mail.ru", "Лена", "Петрова", false, false));
+        return friends;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bSearch:
+                Toast.makeText(getApplicationContext(), "Search", Toast.LENGTH_SHORT).show();
                 loadResults();
                 break;
         }

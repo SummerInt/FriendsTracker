@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.PersonViewHolder>{
 
-    private List<User> friends =  new ArrayList<>();
+    private ArrayList<User>friends =  new ArrayList<User>();
 
     @Override
     public PersonViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
