@@ -1,11 +1,19 @@
 package com.teamm.friendstracker.ui;
+import com.teamm.friendstracker.view.MapView;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,8 +27,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,9 +46,11 @@ import com.google.firebase.storage.StorageReference;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
     View header;
+    GoogleMap map;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         DbManager.read();
 
@@ -156,5 +179,88 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        map.setMinZoomPreference(10);
+
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        String[] permissions = new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.INTERNET};
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, permissions, RESULT_FIRST_USER);
+            return;
+        }
+
+        fusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            onLocationChanged(location);
+                        }
+                    }
+                });
+
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (ActivityCompat
+                .checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, permissions, RESULT_FIRST_USER);
+
+            return;
+        }
+
+        if (locationManager != null) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+        map.addMarker(new MarkerOptions()
+                .position(position)
+                .snippet("Я")
+                /*.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))*/
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        map.moveCamera(CameraUpdateFactory.newLatLng(position));
+
+        map.addCircle(new CircleOptions()
+                .center(position)
+                .radius(15000)
+                .strokeColor(Color.BLACK)
+                .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
+                .strokeWidth(2));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 
 }
