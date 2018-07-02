@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.Resource;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,10 +61,14 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightName(name.getText().toString()))
-                        name.setBackgroundColor(Color.GREEN);
-                    else
-                        name.setBackgroundColor(Color.RED);
+                    if(isRightName(name.getText().toString())){
+                        //name.setBackgroundColor(Color.GREEN);
+                        name.setBackgroundResource(R.drawable.edit_text_style_right);
+                    }
+                    else{
+                        //name.setBackgroundColor(Color.RED);
+                        name.setBackgroundResource(R.drawable.edit_text_style_wrong);
+                    }
                 }
             }
         });
@@ -72,10 +77,15 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightSurname(surname.getText().toString()))
-                        surname.setBackgroundColor(Color.GREEN);
-                    else
-                        surname.setBackgroundColor(Color.RED);
+                    if(isRightSurname(surname.getText().toString())){
+                        //surname.setBackgroundColor(Color.GREEN);
+                        surname.setBackgroundResource(R.drawable.edit_text_style_right);
+                    }
+                    else{
+                        surname.setBackgroundResource(R.drawable.edit_text_style_wrong);
+                        //surname.setBackgroundColor(Color.RED);
+                    }
+
                 }
             }
         });

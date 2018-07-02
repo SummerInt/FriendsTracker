@@ -64,9 +64,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
                     if(isRightEmail(Email.getText().toString()))
-                        Email.setBackgroundColor(Color.GREEN);
+                        Email.setBackgroundResource(R.drawable.edit_text_style_right);
                     else
-                        Email.setBackgroundColor(Color.RED);
+                        Email.setBackgroundResource(R.drawable.edit_text_style_wrong);
                 }
             }
         });
@@ -76,9 +76,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
                     if(isRightPassword(Password.getText().toString()))
-                        Password.setBackgroundColor(Color.GREEN);
+                        Password.setBackgroundResource(R.drawable.edit_text_style_right);
                     else
-                        Password.setBackgroundColor(Color.RED);
+                        Password.setBackgroundResource(R.drawable.edit_text_style_wrong);
                 }
             }
         });
