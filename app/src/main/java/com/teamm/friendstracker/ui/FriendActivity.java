@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -36,20 +37,15 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void loadFriends() {
-        Collection<User> friends = getFriends();
+        ArrayList<User> friends = getFriends();
         adapter.setItems(friends);
     }
 
-    private Collection<User> getFriends() {
-        return Arrays.asList(
-                new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов", false, false),
-                new User("love_cat@mail.ru", "Лена", "Петрова", false, false),
-                new User("parovoooz@mail.ru", "Антон", "Батонов",false, false),
-                new User("ded_moroz@mail.ru", "Глеб", "Хлебушкин", false, false),
-                new User("kotik@mail.ru", "Егор", "Николаев", false, false),
-                new User("zhirnotik@mail.ru", "Алексей", "Макарошкин", false, false),
-                new User("nashe_vse@mail.ru", "Александр", "Пушкин", false, false)
-        );
+    private ArrayList<User> getFriends() {
+        ArrayList<User> friends = new ArrayList<User>();
+        friends.add(new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов", false, false));
+        friends.add(new User("love_cat@mail.ru", "Лена", "Петрова", false, false));
+        return friends;
     }
 
     @Override
