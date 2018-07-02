@@ -20,7 +20,7 @@ public class DbManager {
     public static void write(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("FriendsTracker");
-        myRef.child("Users").child(users.getUid()).setValue(user);
+        myRef.child("Users").child(users.getUid()).child("User").setValue(user);
     }
 
     public static void read(){
@@ -29,7 +29,7 @@ public class DbManager {
         ValueEventListener valueEventListener = myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.child("Users").child(users.getUid()).getValue(User.class);
+                user = dataSnapshot.child("Users").child(users.getUid()).child("User").getValue(User.class);
             }
 
             @Override
