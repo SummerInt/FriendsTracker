@@ -1,7 +1,7 @@
 package com.teamm.friendstracker.ui;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.entity.User;
-import com.teamm.friendstracker.present.RVFriendsAdapter;
+import com.teamm.friendstracker.present.RVSearchAdapter;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -13,29 +13,26 @@ import android.widget.Button;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-public class FriendActivity extends AppCompatActivity implements View.OnClickListener{
+public class FriendSearchActivity extends AppCompatActivity implements View.OnClickListener{
 
     //List<User> friends;
-    RVFriendsAdapter adapter;
+    RVSearchAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friend);
-        RecyclerView rvFriends = (RecyclerView)findViewById(R.id.rvFriends);
+        setContentView(R.layout.activity_friend_search);
+        RecyclerView rvSearch = (RecyclerView)findViewById(R.id.rvResults);
         LinearLayoutManager llm = new LinearLayoutManager(this);
-        rvFriends.setLayoutManager(llm);
-        adapter = new RVFriendsAdapter();
-        rvFriends.setAdapter(adapter);
-        loadFriends();
-        loadFriends();
-        Button bAddFriend = (Button)findViewById(R.id.bAddFriend);
-        bAddFriend.setOnClickListener(this);
+        rvSearch.setLayoutManager(llm);
+        adapter = new RVSearchAdapter();
+        rvSearch.setAdapter(adapter);
+        Button bSearch = (Button)findViewById(R.id.bSearch);
+        bSearch.setOnClickListener(this);
     }
 
 
-    private void loadFriends() {
+    private void loadResults() {
         Collection<User> friends = getFriends();
         adapter.setItems(friends);
     }
@@ -44,10 +41,7 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         return Arrays.asList(
                 new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов"),
                 new User("love_cat@mail.ru", "Лена", "Петрова"),
-                new User("parovoooz@mail.ru", "Антон", "Батонов"),
-                new User("ded_moroz@mail.ru", "Глеб", "Хлебушкин"),
                 new User("kotik@mail.ru", "Егор", "Николаев"),
-                new User("zhirnotik@mail.ru", "Алексей", "Макарошкин"),
                 new User("nashe_vse@mail.ru", "Александр", "Пушкин")
         );
     }
@@ -55,10 +49,10 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bAddFriend:
-                Intent intent = new Intent(this, FriendSearchActivity.class);
-                startActivity(intent);
+            case R.id.bSearch:
+                loadResults();
                 break;
         }
     }
+
 }

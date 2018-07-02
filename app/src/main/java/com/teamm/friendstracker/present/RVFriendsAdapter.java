@@ -1,4 +1,6 @@
 package com.teamm.friendstracker.present;
+import com.teamm.friendstracker.R;
+import com.teamm.friendstracker.model.entity.User;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -8,14 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.teamm.friendstracker.R;
-import com.teamm.friendstracker.model.entity.User;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder>{
+public class RVFriendsAdapter extends RecyclerView.Adapter<RVFriendsAdapter.PersonViewHolder>{
 
     private List<User> friends =  new ArrayList<>();
 
@@ -27,7 +26,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder>{
 
     @Override
     public void onBindViewHolder(PersonViewHolder personViewHolder, int i) {
-        personViewHolder.friendName.setText(friends.get(i).getName());
+        personViewHolder.friendName.setText(friends.get(i).getName()+" "+friends.get(i).getSurname());
         personViewHolder.friendMail.setText(friends.get(i).getEmail());
         //personViewHolder.friendPhoto.setImageResource(friends.get(i).getPhoto());
     }
