@@ -3,6 +3,7 @@ package com.teamm.friendstracker.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -14,16 +15,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
-
+    View header;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +48,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View header = navigationView.getHeaderView(0);
 
+        header = navigationView.getHeaderView(0);
+        setProfileInfo();
         LinearLayout menuHeadLayout = (LinearLayout) header.findViewById(R.id.mHeadLayout);
-
         menuHeadLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,6 +66,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DbManager.read();
 
     }
+
+    private void setProfileInfo(){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        TextView mail=(TextView) header.findViewById(R.id.tvMail);
+        TextView name=(TextView) header.findViewById(R.id.tvName);
+        String nameAndSurname = DbManager.user.getName()+" "+DbManager.user.getSurname();
+        name.setText(nameAndSurname);
+        mail.setText(DbManager.user.getEmail());
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -105,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(this, FriendActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_exit) {
+            DbManager.signOut();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
