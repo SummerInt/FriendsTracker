@@ -4,16 +4,19 @@ public class User {
     private String email;
     private String name;
     private String surname;
-    private String avatar;
+    private boolean avatar;
+    private boolean online;
 
-    public User() {
+    public User(){
 
     }
 
-    public User(String email, String name, String surname) {
+    public User(String email, String name, String surname, boolean avatar, boolean online) {
         this.name = name;
         this.email = email;
         this.surname = surname;
+        this.avatar = avatar;
+        this.online = online;
     }
 
     public String getEmail() {
@@ -40,11 +43,19 @@ public class User {
         this.surname = surname;
     }
 
-    public String getAvatar() {
+    public boolean getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
+    public void setAvatar(boolean avatar) {
         this.avatar = avatar;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 }

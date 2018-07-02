@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.teamm.friendstracker.R;
+import com.teamm.friendstracker.model.db.DbManager;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+
+        DbManager.read();
 
     }
 
