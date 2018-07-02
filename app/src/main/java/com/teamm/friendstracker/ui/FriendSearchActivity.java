@@ -39,10 +39,10 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
 
     private Collection<User> getFriends() {
         return Arrays.asList(
-                new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов"),
-                new User("love_cat@mail.ru", "Лена", "Петрова"),
-                new User("kotik@mail.ru", "Егор", "Николаев"),
-                new User("nashe_vse@mail.ru", "Александр", "Пушкин")
+                new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов", false, false),
+                new User("love_cat@mail.ru", "Лена", "Петрова", false, false),
+                new User("kotik@mail.ru", "Егор", "Николаев", false, false),
+                new User("nashe_vse@mail.ru", "Александр", "Пушкин", false, false)
         );
     }
 

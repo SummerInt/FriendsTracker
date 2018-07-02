@@ -42,13 +42,13 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
 
     private Collection<User> getFriends() {
         return Arrays.asList(
-                new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов"),
-                new User("love_cat@mail.ru", "Лена", "Петрова"),
-                new User("parovoooz@mail.ru", "Антон", "Батонов"),
-                new User("ded_moroz@mail.ru", "Глеб", "Хлебушкин"),
-                new User("kotik@mail.ru", "Егор", "Николаев"),
-                new User("zhirnotik@mail.ru", "Алексей", "Макарошкин"),
-                new User("nashe_vse@mail.ru", "Александр", "Пушкин")
+                new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов", false, false),
+                new User("love_cat@mail.ru", "Лена", "Петрова", false, false),
+                new User("parovoooz@mail.ru", "Антон", "Батонов",false, false),
+                new User("ded_moroz@mail.ru", "Глеб", "Хлебушкин", false, false),
+                new User("kotik@mail.ru", "Егор", "Николаев", false, false),
+                new User("zhirnotik@mail.ru", "Алексей", "Макарошкин", false, false),
+                new User("nashe_vse@mail.ru", "Александр", "Пушкин", false, false)
         );
     }
 
