@@ -34,6 +34,7 @@ public class DbManager {
 
     public static void read(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        users = mAuth.getCurrentUser();
         final DatabaseReference myRef = database.getReference("FriendsTracker");
         ValueEventListener valueEventListener = myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -99,6 +100,6 @@ public class DbManager {
     }
 
     public static void signOut(){
-        mAuth.signOut();
+        mAuth.signOut();users = mAuth.getCurrentUser();
     }
 }
