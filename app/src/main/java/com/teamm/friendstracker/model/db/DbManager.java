@@ -29,6 +29,7 @@ public class DbManager {
     public static void write(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("FriendsTracker");
+        users = mAuth.getCurrentUser();
         myRef.child("Users").child(users.getUid()).setValue(user);
     }
 
