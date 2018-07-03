@@ -53,6 +53,7 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend);
+        DbManager.readFriendId();
         DbManager.readFriends();
         rvFriends = (RecyclerView)findViewById(R.id.rvFriends);
         LinearLayoutManager llm = new LinearLayoutManager(this);

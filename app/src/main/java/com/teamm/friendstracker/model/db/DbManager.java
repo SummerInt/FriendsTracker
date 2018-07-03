@@ -29,6 +29,8 @@ public class DbManager {
 
     public static ArrayList<User> friends = new ArrayList<User>();
 
+    public static ArrayList<String> friendsId = new ArrayList<String>();
+
     public static void write(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("FriendsTracker");
@@ -54,20 +56,37 @@ public class DbManager {
         });
     }
 
-    public static void read(final String userStr){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("FriendsTracker");
-        ValueEventListener valueEventListener = myRef.addValueEventListener(new ValueEventListener() {
+    public static void readFriendId(){
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("FriendsTracker").child("Friends").child(users.getUid());
+        ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userFriend = dataSnapshot.child("Users").child(userStr).getValue(User.class);
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                //friendsId.add(dataSnapshot.getValue(String.class));
+                friendsId.add(dataSnapshot.getKey());
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-
         });
     }
 
@@ -78,7 +97,11 @@ public class DbManager {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 //read(dataSnapshot.getKey());
-                friends.add(dataSnapshot.getValue(User.class));
+                //friends.add(dataSnapshot.child("User").getValue(User.class));
+                userFriend = dataSnapshot.getValue(User.class);
+                //read(dataSnapshot.getKey());
+                if(friendsId.indexOf(dataSnapshot.getKey())!=-1)
+                    friends.add(userFriend);
             }
 
             @Override
@@ -104,7 +127,8 @@ public class DbManager {
     }
 
     public static void signOut(){
-        mAuth.signOut();users = mAuth.getCurrentUser();
+        mAuth.signOut();
+        users = mAuth.getCurrentUser();
     }
 
     public static Uri getAvatarUri() {
