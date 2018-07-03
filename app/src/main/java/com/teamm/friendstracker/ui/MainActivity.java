@@ -1,6 +1,7 @@
 package com.teamm.friendstracker.ui;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.maps.model.Marker;
 import com.teamm.friendstracker.model.entity.Coordinats;
 import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.view.MapView;
@@ -278,21 +279,32 @@ public class MainActivity extends AppCompatActivity
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        /*if (ActivityCompat
-                .checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, permissions, RESULT_FIRST_USER);
-
-            return;
-        }*/
-
         if (locationManager != null) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
         }
 
         addFriendsMarkers();
+
+        GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Boolean tag = (Boolean) marker.getTag();
+                if (tag == null) {
+                    return true;
+                }
+                if (tag) {
+                    marker.setTag(false);
+                    marker.hideInfoWindow();
+                    return false;
+
+                }
+
+                marker.setTag(true);
+                marker.showInfoWindow();
+
+                return false;
+            }
+        };
     }
 
     private void addFriendsMarkers() {
@@ -301,8 +313,10 @@ public class MainActivity extends AppCompatActivity
         LatLng p = new LatLng(54.2f, 48.388101);
         map.addMarker(new MarkerOptions()
                 .position(p)
+                .title("друг")
+                .snippet("захардкоженный")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        );
+        ).setTag(false);
 
         /*LatLng pos = new LatLng(54.19f, 48.2f);
         map.addMarker(new MarkerOptions()
@@ -314,7 +328,8 @@ public class MainActivity extends AppCompatActivity
             LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
             map.addMarker(new MarkerOptions()
                     .position(position)
-                    //.snippet("Я")
+                    //.title("")
+                    //.snippet("")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             );
         }
@@ -325,14 +340,16 @@ public class MainActivity extends AppCompatActivity
 
         map.addMarker(new MarkerOptions()
                 .position(position)
-                //.snippet("Я")
+                .title(DbManager.user.getName())
+                .snippet(DbManager.user.getSurname())
                 //.icon(BitmapDescriptorFactory
                 //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
                 //)
                 .icon(BitmapDescriptorFactory
                         .fromBitmap(drawableToBitmap(photo.getDrawable()))
                 )
-        );
+        ).setTag(false);
+
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
 
         map.addCircle(new CircleOptions()
