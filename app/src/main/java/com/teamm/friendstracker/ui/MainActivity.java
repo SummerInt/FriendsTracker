@@ -226,6 +226,9 @@ public class MainActivity extends AppCompatActivity
                     String name = data.getStringExtra("name");
                     String surname = data.getStringExtra("surname");
                     tvName.setText(name+" "+surname);
+
+                    // что выше, наверно не нужно
+                    setProfileInfo();
                 }
                 break;
         }
