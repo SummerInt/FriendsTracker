@@ -4,6 +4,7 @@ import com.teamm.friendstracker.view.MapView;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -47,9 +48,13 @@ import com.google.firebase.storage.StorageReference;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
 
-public class MainActivity extends AppCompatActivity implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity
+        implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
+
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
+
     View header;
+
     GoogleMap map;
 
     private int mInterval = 2000;
@@ -263,8 +268,11 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
         map.addMarker(new MarkerOptions()
                 .position(position)
                 .snippet("Я")
-                /*.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))*/
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                .icon(BitmapDescriptorFactory
+                        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
+                )
+        );
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
 
         map.addCircle(new CircleOptions()
