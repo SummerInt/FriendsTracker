@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            onLocationChanged(location);
+                            addMarker(location);
                         }
                     }
                 });
@@ -289,8 +289,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
+    public void addMarker(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 
         map.addMarker(new MarkerOptions()
@@ -312,6 +311,13 @@ public class MainActivity extends AppCompatActivity
                 .strokeColor(Color.BLACK)
                 .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
                 .strokeWidth(2));
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+        addMarker(location);
+        map.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
     private static Bitmap drawableToBitmap(Drawable drawable) {
