@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
             if(bitmapDrawable.getBitmap() != null) {
                 bitmap = bitmapDrawable.getBitmap();
-                bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
                 return bitmap;
             }
         }
