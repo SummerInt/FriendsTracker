@@ -1,6 +1,7 @@
 package com.teamm.friendstracker.ui;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.Marker;
 import com.teamm.friendstracker.model.entity.Coordinats;
 import com.teamm.friendstracker.model.entity.User;
@@ -59,10 +60,16 @@ import com.teamm.friendstracker.model.db.DbManager;
 
 import java.util.ArrayList;
 
+import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+
 public class MainActivity extends AppCompatActivity
         implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
 
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
+    static final int VISABILITY_RADIUS = 15000;
 
     View header;
 
@@ -70,6 +77,7 @@ public class MainActivity extends AppCompatActivity
     int photoRes;
 
     GoogleMap map;
+    Marker userMarker;
 
     private int mInterval = 2000;
     private Handler mHandler;
@@ -289,14 +297,16 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker) {
                 Boolean tag = (Boolean) marker.getTag();
+
                 if (tag == null) {
                     return true;
                 }
+
                 if (tag) {
                     marker.setTag(false);
                     marker.hideInfoWindow();
-                    return false;
 
+                    return false;
                 }
 
                 marker.setTag(true);
@@ -311,34 +321,79 @@ public class MainActivity extends AppCompatActivity
         DbManager.readCoordinats("test");
 
         LatLng p = new LatLng(54.2f, 48.388101);
-        map.addMarker(new MarkerOptions()
-                .position(p)
-                .title("друг")
-                .snippet("захардкоженный")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        ).setTag(false);
+        if (friendVisability(p.latitude, p.longitude)) {
+            Marker friendMarker = map.addMarker(new MarkerOptions()
+                    .position(p)
+                    .title("друг")
+                    .snippet("захардкоженный")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            );
+            friendMarker.setTag(false);
+        }
 
-        /*LatLng pos = new LatLng(54.19f, 48.2f);
-        map.addMarker(new MarkerOptions()
-                .position(pos)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        );*/
-
-        for (Coordinats coordinats : DbManager.coordinats) {
-            LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
+        LatLng pos = new LatLng(54.19f, 48.2f);
+        if (friendVisability(pos.latitude, pos.longitude)) {
             map.addMarker(new MarkerOptions()
-                    .position(position)
-                    //.title("")
-                    //.snippet("")
+                    .position(pos)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             );
         }
+
+        for (Coordinats coordinats : DbManager.coordinats) {
+            LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
+            if (friendVisability(p.latitude, p.longitude)) {
+                map.addMarker(new MarkerOptions()
+                        .position(position)
+                        .title("")
+                        .snippet("")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                );
+            }
+        }
+    }
+
+    private boolean friendVisability(final double flat, final double flng) {
+        final double lat = userMarker.getPosition().latitude;
+        final double lng = userMarker.getPosition().longitude;
+        final double EARTH_RADIUS = 6371;
+
+        final double dlat = deg2rad(lat - flat);
+        final double dlng = deg2rad(lng - flng);
+
+        final double a = sin(dlat / 2) * sin(dlat / 2) + cos(deg2rad(flat))
+                * cos(deg2rad(lat)) * sin(dlng / 2) * sin(dlng / 2);
+        final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+        /*double dLat  = rad(p2.lat() - p1.lat());
+        var dLong = rad(p2.lng() - p1.lng());
+
+        var a = sin(dLat/2) * sin(dLat/2) +
+                cos(rad(p1.lat())) * cos(rad(p2.lat())) * sin(dLong/2) * sin(dLong/2);
+        var c = 2 * atan2(sqrt(a), sqrt(1-a));
+        var d = R * c;
+
+        return d.toFixed(3);*/
+
+        // получаем расстояние в километрах
+        return c * EARTH_RADIUS < VISABILITY_RADIUS / 1000;
+
+    }
+
+    /**
+     * Преобразует значение из градусов в радианы
+     *
+     * @param degree
+     * @return
+     */
+    @SuppressWarnings("JavaDoc")
+    private static double deg2rad(final double degree) {
+        return degree * (Math.PI / 180);
     }
 
     public void addMarker(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 
-        map.addMarker(new MarkerOptions()
+        userMarker = map.addMarker(new MarkerOptions()
                 .position(position)
                 .title(DbManager.user.getName())
                 .snippet(DbManager.user.getSurname())
@@ -348,15 +403,16 @@ public class MainActivity extends AppCompatActivity
                 .icon(BitmapDescriptorFactory
                         .fromBitmap(drawableToBitmap(photo.getDrawable()))
                 )
-        ).setTag(false);
+        );
+        userMarker.setTag(false);
 
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
 
         map.addCircle(new CircleOptions()
                 .center(position)
-                .radius(15000)
+                .radius(VISABILITY_RADIUS)
                 .strokeColor(Color.BLACK)
-                .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
+                .fillColor(/*R.color.colorVisibilityRadius*/0x05ff0000)
                 .strokeWidth(2));
     }
 
