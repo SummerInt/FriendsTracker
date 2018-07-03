@@ -269,9 +269,9 @@ public class MainActivity extends AppCompatActivity
                 .position(position)
                 .snippet("Я")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                .icon(BitmapDescriptorFactory
-                        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
-                )
+                //.icon(BitmapDescriptorFactory
+                //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
+                //)
         );
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
 
