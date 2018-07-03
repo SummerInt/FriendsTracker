@@ -1,6 +1,7 @@
 package com.teamm.friendstracker.ui;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.teamm.friendstracker.model.entity.Coordinats;
 import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.view.MapView;
 
@@ -295,14 +296,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addFriendsMarkers() {
+        DbManager.readCoordinats("test");
 
-        LatLng position = new LatLng(54.325761f, 48.388101);
-
+        LatLng p = new LatLng(54.2f, 48.388101);
         map.addMarker(new MarkerOptions()
-                .position(position)
-                //.snippet("Я")
+                .position(p)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         );
+
+        /*LatLng pos = new LatLng(54.19f, 48.2f);
+        map.addMarker(new MarkerOptions()
+                .position(pos)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        );*/
+
+        for (Coordinats coordinats : DbManager.coordinats) {
+            LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
+            map.addMarker(new MarkerOptions()
+                    .position(position)
+                    //.snippet("Я")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            );
+        }
     }
 
     public void addMarker(Location location) {
