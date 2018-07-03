@@ -1,6 +1,7 @@
 package com.teamm.friendstracker.ui;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.view.MapView;
 
 import android.Manifest;
@@ -53,6 +54,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
@@ -274,7 +277,7 @@ public class MainActivity extends AppCompatActivity
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        if (ActivityCompat
+        /*if (ActivityCompat
                 .checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -282,11 +285,24 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this, permissions, RESULT_FIRST_USER);
 
             return;
-        }
+        }*/
 
         if (locationManager != null) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
         }
+
+        addFriendsMarkers();
+    }
+
+    private void addFriendsMarkers() {
+
+        LatLng position = new LatLng(54.325761f, 48.388101);
+
+        map.addMarker(new MarkerOptions()
+                .position(position)
+                //.snippet("Я")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        );
     }
 
     public void addMarker(Location location) {
