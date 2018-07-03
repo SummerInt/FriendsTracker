@@ -63,7 +63,7 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
 
         PersonViewHolder(View itemView) {
             super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.cvFriend);
+            cv = (CardView)itemView.findViewById(R.id.cvFriendSearch);
             tvName = (TextView)itemView.findViewById(R.id.tvName);
             tvMail = (TextView)itemView.findViewById(R.id.tvMail);
             bAdd= (Button)itemView.findViewById(R.id.bAdd);

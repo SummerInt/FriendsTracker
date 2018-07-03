@@ -40,13 +40,12 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
 
 
 
-
     private void loadResults() {
-        ArrayList<User> friends = getFriends();
+        ArrayList<User> friends = getResult();
         adapter.setItems(friends);
     }
 
-    private ArrayList<User> getFriends() {
+    private ArrayList<User> getResult() {
         ArrayList<User> friends = new ArrayList<User>();
         friends.add(new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов", false, false));
         friends.add(new User("love_cat@mail.ru", "Лена", "Петрова", false, false));

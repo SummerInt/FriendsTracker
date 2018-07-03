@@ -36,7 +36,7 @@ public class RVFriendsAdapter extends RecyclerView.Adapter<RVFriendsAdapter.Pers
         notifyDataSetChanged();
     }
 
-    public void setItems(Collection<User> newFriends) {
+    public void setItems(ArrayList<User> newFriends) {
         friends.addAll(newFriends);
         notifyDataSetChanged();
     }
