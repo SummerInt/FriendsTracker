@@ -343,7 +343,8 @@ public class MainActivity extends AppCompatActivity
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
             if(bitmapDrawable.getBitmap() != null) {
                 bitmap = bitmapDrawable.getBitmap();
-                bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+
+                bitmap = scaleBitmap(bitmap);
                 return bitmap;
             }
         }
@@ -355,13 +356,17 @@ public class MainActivity extends AppCompatActivity
             bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         }
 
-        bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+        bitmap = scaleBitmap(bitmap);
 
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         bitmap.setDensity(10);
         return bitmap;
+    }
+
+    private static Bitmap scaleBitmap(Bitmap bitmap) {
+        return Bitmap.createScaledBitmap(bitmap, 120, 120, false);
     }
 
     @Override
