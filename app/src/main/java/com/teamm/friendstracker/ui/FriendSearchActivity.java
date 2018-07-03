@@ -4,12 +4,14 @@ import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.present.RVSearchAdapter;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
 
     //List<User> friends;
     RVSearchAdapter adapter;
+    EditText etSearch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,9 +33,12 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
         rvSearch.setLayoutManager(llm);
         adapter = new RVSearchAdapter();
         rvSearch.setAdapter(adapter);
+        etSearch = (EditText)findViewById(R.id.etSearch);
         Button bSearch = (Button)findViewById(R.id.bSearch);
         bSearch.setOnClickListener(this);
     }
+
+
 
 
     private void loadResults() {
