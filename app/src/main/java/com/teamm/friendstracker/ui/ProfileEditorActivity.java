@@ -201,10 +201,11 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
     }
 
     public void avatarDownload(){
-        StorageReference storageReference = storageRef.child(DbManager.users.getUid()).child("avatar.jpg");
-        Glide.with(ProfileEditorActivity.this)
+        //image.setImageURI(DbManager.getAvatarUri());
+
+        Glide.with(this)
                 .using(new FirebaseImageLoader())
-                .load(storageReference)
+                .load(DbManager.getAvatarStorageReference())
                 .into(image);
     }
 }

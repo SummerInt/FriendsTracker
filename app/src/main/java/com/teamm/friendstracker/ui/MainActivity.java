@@ -1,10 +1,17 @@
 package com.teamm.friendstracker.ui;
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.teamm.friendstracker.view.MapView;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -47,9 +54,16 @@ import com.google.firebase.storage.StorageReference;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
 
-public class MainActivity extends AppCompatActivity implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity
+        implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
+
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
+
     View header;
+
+    ImageView photo;
+    int photoRes;
+
     GoogleMap map;
 
     private int mInterval = 2000;
@@ -82,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -94,7 +109,12 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
         navigationView.setNavigationItemSelectedListener(this);
 
         header = navigationView.getHeaderView(0);
+
+        photoRes = R.id.ivPhoto;
+        photo = header.findViewById(photoRes);
+
         setProfileInfo();
+
         LinearLayout menuHeadLayout = (LinearLayout) header.findViewById(R.id.mHeadLayout);
         menuHeadLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,6 +145,15 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
         String nameAndSurname = DbManager.user.getName()+" "+DbManager.user.getSurname();
         name.setText(nameAndSurname);
         mail.setText(DbManager.user.getEmail());
+
+        /*Glide.with(this)
+                .load(DbManager.avatarDownload())
+                .into(photo);*/
+
+        Glide.with(this)
+                .using(new FirebaseImageLoader())
+                .load(DbManager.getAvatarStorageReference())
+                .into(photo);
     }
 
 
@@ -201,6 +230,9 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
                     String name = data.getStringExtra("name");
                     String surname = data.getStringExtra("surname");
                     tvName.setText(name+" "+surname);
+
+                    // что выше, наверно не нужно
+                    setProfileInfo();
                 }
                 break;
         }
@@ -260,11 +292,18 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
     @Override
     public void onLocationChanged(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+
         map.addMarker(new MarkerOptions()
                 .position(position)
-                .snippet("Я")
-                /*.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))*/
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                //.snippet("Я")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                //.icon(BitmapDescriptorFactory
+                //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
+                //)
+                .icon(BitmapDescriptorFactory
+                        .fromBitmap(drawableToBitmap(photo.getDrawable()))
+                )
+        );
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
 
         map.addCircle(new CircleOptions()
@@ -273,6 +312,34 @@ public class MainActivity extends AppCompatActivity implements MapView, OnMapRea
                 .strokeColor(Color.BLACK)
                 .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
                 .strokeWidth(2));
+    }
+
+    private static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if(bitmapDrawable.getBitmap() != null) {
+                bitmap = bitmapDrawable.getBitmap();
+                bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                return bitmap;
+            }
+        }
+
+        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            // Single color bitmap will be created of 1x1 pixel
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        bitmap.setDensity(10);
+        return bitmap;
     }
 
     @Override
