@@ -97,10 +97,6 @@ public class LoginActivity extends AppCompatActivity {
                 enter(Email.getText().toString(), Password.getText().toString());
                 break;
             }
-
-            case R.id.bForgetPasswrd:{
-                break;
-            }
         }
 
     }
