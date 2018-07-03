@@ -1,5 +1,6 @@
 package com.teamm.friendstracker.present;
 import com.teamm.friendstracker.R;
+import com.teamm.friendstracker.model.db.DbManager;
 import com.teamm.friendstracker.model.entity.User;
 
 
@@ -76,7 +77,11 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
             bAdd= (Button)itemView.findViewById(R.id.bAdd);
         }
 
-
+        @Override
+        public void onClick(View v) {
+            //тут обработка добавления в друзья
+            //DbManager.addFriend(DbManager.fromIdToEmail(tvMail.getText().toString()));
+        }
     }
 
 }
