@@ -275,8 +275,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void writeNewUser(String email, String name, String surname) {
         DbManager.user = new User(email, name, surname, false, true);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("FriendsTracker");
-        myRef.child("Users").child(users.getUid()).setValue(DbManager.user);
+        //FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //DatabaseReference myRef = database.getReference("FriendsTracker");
+        //myRef.child("Users").child(users.getUid()).setValue(DbManager.user);
+        DbManager.write();
     }
 }
