@@ -6,8 +6,12 @@ import com.teamm.friendstracker.view.MapView;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -289,9 +293,6 @@ public class MainActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 
-        //DbManager.user.getAvatar()
-        //Uri uri = DbManager.avatarDownload();
-
         map.addMarker(new MarkerOptions()
                 .position(position)
                 //.snippet("Я")
@@ -299,9 +300,9 @@ public class MainActivity extends AppCompatActivity
                 //.icon(BitmapDescriptorFactory
                 //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
                 //)
-                //.icon(BitmapDescriptorFactory
-                //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), photoRes))
-                //)
+                .icon(BitmapDescriptorFactory
+                        .fromBitmap(drawableToBitmap(photo.getDrawable()))
+                )
         );
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
 
@@ -311,6 +312,34 @@ public class MainActivity extends AppCompatActivity
                 .strokeColor(Color.BLACK)
                 .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
                 .strokeWidth(2));
+    }
+
+    private static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if(bitmapDrawable.getBitmap() != null) {
+                bitmap = bitmapDrawable.getBitmap();
+                bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                return bitmap;
+            }
+        }
+
+        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            // Single color bitmap will be created of 1x1 pixel
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        bitmap.setDensity(10);
+        return bitmap;
     }
 
     @Override
