@@ -1,10 +1,12 @@
 package com.teamm.friendstracker.ui;
 import com.teamm.friendstracker.R;
+import com.teamm.friendstracker.model.db.DbManager;
 import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.present.RVSearchAdapter;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,26 +25,58 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
     //List<User> friends;
     RVSearchAdapter adapter;
     EditText etSearch;
+    private RecyclerView rvSearch;
+
+    private int mInterval = 2000;
+    private Handler mHandler;
+    private Runnable mAdShower = new Runnable() {
+        @Override
+        public void run() {
+            try {
+
+
+                loadResults ();
+
+
+            } finally {
+                mHandler.postDelayed(mAdShower, mInterval);
+            }
+        }
+    };
+
+    private void startTask() {
+        mAdShower.run();
+    }
+
+    private void stopTask() {
+
+        mHandler.removeCallbacks(mAdShower);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_search);
-        RecyclerView rvSearch = (RecyclerView)findViewById(R.id.rvResults);
+        rvSearch = (RecyclerView)findViewById(R.id.rvResults);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rvSearch.setLayoutManager(llm);
         adapter = new RVSearchAdapter();
-        rvSearch.setAdapter(adapter);
+        //rvSearch.setAdapter(adapter);
         etSearch = (EditText)findViewById(R.id.etSearch);
         Button bSearch = (Button)findViewById(R.id.bSearch);
         bSearch.setOnClickListener(this);
+
+        DbManager.serchFriends.clear();
+        mHandler = new Handler();
+        startTask();
     }
 
 
 
     private void loadResults() {
-        ArrayList<User> friends = getResult();
-        adapter.setItems(friends);
+        adapter.clearItems();
+        adapter.setItems(DbManager.serchFriends);
+        rvSearch.setAdapter(adapter);
     }
 
     private ArrayList<User> getResult() {
@@ -56,6 +90,8 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bSearch:
+                DbManager.serchFriends.clear();
+                DbManager.serchFriend(etSearch.getText().toString());
                 Toast.makeText(getApplicationContext(), "Search", Toast.LENGTH_SHORT).show();
                 loadResults();
                 break;

@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.teamm.friendstracker.model.entity.Coordinats;
 import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.ui.FriendActivity;
 
@@ -26,10 +27,15 @@ public class DbManager {
     public static FirebaseUser users = mAuth.getInstance().getCurrentUser();
     public static User user = new User();
     public static User userFriend = new User();
+    public static String id;
 
     public static ArrayList<User> friends = new ArrayList<User>();
 
     public static ArrayList<String> friendsId = new ArrayList<String>();
+
+    public static ArrayList<Coordinats> coordinats = new ArrayList<Coordinats>();
+
+    public static ArrayList<User> serchFriends = new ArrayList<User>();
 
     public static void write(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -96,10 +102,7 @@ public class DbManager {
         ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                //read(dataSnapshot.getKey());
-                //friends.add(dataSnapshot.child("User").getValue(User.class));
                 userFriend = dataSnapshot.getValue(User.class);
-                //read(dataSnapshot.getKey());
                 if(friendsId.indexOf(dataSnapshot.getKey())!=-1)
                     friends.add(userFriend);
             }
@@ -129,6 +132,118 @@ public class DbManager {
     public static void signOut(){
         mAuth.signOut();
         users = mAuth.getCurrentUser();
+    }
+
+    public static void saveCoordinats(double latitude, double longitude){
+        Coordinats coordinats = new Coordinats(latitude,longitude);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("FriendsTracker");
+        myRef.child("Coordinats").child(users.getUid()).setValue(coordinats);
+    }
+
+    public static void readCoordinats(String idUser){
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("FriendsTracker").child("Coordinats").child(idUser);
+        ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                coordinats.add(dataSnapshot.getValue(Coordinats.class));
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static void serchFriend(final String email){
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("FriendsTracker").child("Users");
+        ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                userFriend = dataSnapshot.getValue(User.class);
+                if(userFriend.getEmail().startsWith(email))
+                    serchFriends.add(userFriend);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static void addFriend(String id){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("FriendsTracker");
+        myRef.child("Friends").child(users.getUid()).child(id).setValue(true);
+    }
+
+    public static String fromIdToEmail(final String email){
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("FriendsTracker").child("Users");
+        ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                userFriend = dataSnapshot.getValue(User.class);
+                if(userFriend.getEmail().equals(email))
+                    id=dataSnapshot.getKey();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return id;
     }
 
     public static Uri getAvatarUri() {
