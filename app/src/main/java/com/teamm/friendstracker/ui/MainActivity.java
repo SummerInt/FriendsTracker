@@ -146,10 +146,9 @@ public class MainActivity extends AppCompatActivity
                 .load(DbManager.avatarDownload())
                 .into(photo);*/
 
-        StorageReference storageReference = storageRef.child(DbManager.users.getUid()).child("avatar.jpg");
         Glide.with(this)
                 .using(new FirebaseImageLoader())
-                .load(storageReference)
+                .load(DbManager.getAvatarStorageReference())
                 .into(photo);
     }
 

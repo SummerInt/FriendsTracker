@@ -107,11 +107,17 @@ public class DbManager {
         mAuth.signOut();users = mAuth.getCurrentUser();
     }
 
-    public static Uri avatarDownload() {
+    public static Uri getAvatarUri() {
         StorageReference storageReference = FirebaseStorage
                 .getInstance()
                 .getReference()
                 .child(DbManager.users.getUid()).child("avatar.jpg");
         return Uri.parse(storageReference.getPath());
+    }
+    public static StorageReference getAvatarStorageReference() {
+        return FirebaseStorage
+                .getInstance()
+                .getReference()
+                .child(DbManager.users.getUid()).child("avatar.jpg");
     }
 }
