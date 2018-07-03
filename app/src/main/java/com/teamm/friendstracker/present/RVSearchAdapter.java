@@ -31,6 +31,13 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
     public void onBindViewHolder(PersonViewHolder personViewHolder, int i) {
         personViewHolder.tvName.setText(friends.get(i).getName()+" "+friends.get(i).getSurname());
         personViewHolder.tvMail.setText(friends.get(i).getEmail());
+        personViewHolder.bAdd.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                // и тут уже как выше через friends.get(i) получаем инфу userа
+            }
+        });
+
     }
 
     public void clearItems() {
@@ -55,7 +62,7 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public static class PersonViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class PersonViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView tvName;
         TextView tvMail;
@@ -67,13 +74,9 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
             tvName = (TextView)itemView.findViewById(R.id.tvName);
             tvMail = (TextView)itemView.findViewById(R.id.tvMail);
             bAdd= (Button)itemView.findViewById(R.id.bAdd);
-            itemView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            //тут обработка добавления в друзья
-        }
+
     }
 
 }
