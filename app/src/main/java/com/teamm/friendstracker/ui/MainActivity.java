@@ -1,4 +1,6 @@
 package com.teamm.friendstracker.ui;
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.teamm.friendstracker.view.MapView;
 
 import android.Manifest;
@@ -55,6 +57,9 @@ public class MainActivity extends AppCompatActivity
 
     View header;
 
+    ImageView photo;
+    int photoRes;
+
     GoogleMap map;
 
     private int mInterval = 2000;
@@ -87,6 +92,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -99,7 +105,12 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         header = navigationView.getHeaderView(0);
+
+        photoRes = R.id.ivPhoto;
+        photo = header.findViewById(photoRes);
+
         setProfileInfo();
+
         LinearLayout menuHeadLayout = (LinearLayout) header.findViewById(R.id.mHeadLayout);
         menuHeadLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +141,16 @@ public class MainActivity extends AppCompatActivity
         String nameAndSurname = DbManager.user.getName()+" "+DbManager.user.getSurname();
         name.setText(nameAndSurname);
         mail.setText(DbManager.user.getEmail());
+
+        /*Glide.with(this)
+                .load(DbManager.avatarDownload())
+                .into(photo);*/
+
+        StorageReference storageReference = storageRef.child(DbManager.users.getUid()).child("avatar.jpg");
+        Glide.with(this)
+                .using(new FirebaseImageLoader())
+                .load(storageReference)
+                .into(photo);
     }
 
 
@@ -265,12 +286,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+
+        //DbManager.user.getAvatar()
+        //Uri uri = DbManager.avatarDownload();
+
         map.addMarker(new MarkerOptions()
                 .position(position)
-                .snippet("Я")
+                //.snippet("Я")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 //.icon(BitmapDescriptorFactory
                 //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
+                //)
+                //.icon(BitmapDescriptorFactory
+                //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), photoRes))
                 //)
         );
         map.moveCamera(CameraUpdateFactory.newLatLng(position));

@@ -1,5 +1,6 @@
 package com.teamm.friendstracker.model.db;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
@@ -12,6 +13,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.ui.FriendActivity;
 
@@ -102,5 +105,13 @@ public class DbManager {
 
     public static void signOut(){
         mAuth.signOut();users = mAuth.getCurrentUser();
+    }
+
+    public static Uri avatarDownload() {
+        StorageReference storageReference = FirebaseStorage
+                .getInstance()
+                .getReference()
+                .child(DbManager.users.getUid()).child("avatar.jpg");
+        return Uri.parse(storageReference.getPath());
     }
 }
