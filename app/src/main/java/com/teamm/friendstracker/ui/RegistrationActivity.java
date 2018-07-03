@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText Name;
     private EditText Surname;
     private EditText Password2;
+    private Button bBegin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +59,10 @@ public class RegistrationActivity extends AppCompatActivity {
 
         Email = (EditText) findViewById(R.id.etMail);
         Password = (EditText) findViewById(R.id.etPasswrd);
+        Password2 = (EditText) findViewById(R.id.etPasswrd2);
         Name = (EditText) findViewById(R.id.etName);
         Surname = (EditText) findViewById(R.id.etSurname);
-        Password2 = (EditText) findViewById(R.id.etPasswrd2);
+        bBegin = (Button)  findViewById(R.id.bBegin);
 
         Email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -89,11 +92,14 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(Password2.getText().toString().equals(Password.getText().toString()))
+                    if(Password2.getText().toString().equals(Password.getText().toString())){
                         Password2.setBackgroundColor(Color.GREEN);
+                        bBegin.setEnabled(true);
+                    }
                     else {
                         Toast.makeText(RegistrationActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
                         Password2.setBackgroundColor(Color.RED);
+                        bBegin.setEnabled(false);
                     }
                 }
             }
