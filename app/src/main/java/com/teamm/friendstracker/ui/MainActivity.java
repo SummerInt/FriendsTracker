@@ -1,6 +1,7 @@
 package com.teamm.friendstracker.ui;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.view.MapView;
 
 import android.Manifest;
@@ -53,6 +54,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
@@ -267,14 +270,14 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            onLocationChanged(location);
+                            addMarker(location);
                         }
                     }
                 });
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        if (ActivityCompat
+        /*if (ActivityCompat
                 .checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -282,21 +285,32 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this, permissions, RESULT_FIRST_USER);
 
             return;
-        }
+        }*/
 
         if (locationManager != null) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
         }
+
+        addFriendsMarkers();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+    private void addFriendsMarkers() {
+
+        LatLng position = new LatLng(54.325761f, 48.388101);
 
         map.addMarker(new MarkerOptions()
                 .position(position)
                 //.snippet("Я")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        );
+    }
+
+    public void addMarker(Location location) {
+        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+
+        map.addMarker(new MarkerOptions()
+                .position(position)
+                //.snippet("Я")
                 //.icon(BitmapDescriptorFactory
                 //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
                 //)
@@ -314,6 +328,13 @@ public class MainActivity extends AppCompatActivity
                 .strokeWidth(2));
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+        addMarker(location);
+        map.moveCamera(CameraUpdateFactory.newLatLng(position));
+    }
+
     private static Bitmap drawableToBitmap(Drawable drawable) {
         Bitmap bitmap;
 
@@ -321,7 +342,8 @@ public class MainActivity extends AppCompatActivity
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
             if(bitmapDrawable.getBitmap() != null) {
                 bitmap = bitmapDrawable.getBitmap();
-                bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+
+                bitmap = scaleBitmap(bitmap);
                 return bitmap;
             }
         }
@@ -333,13 +355,17 @@ public class MainActivity extends AppCompatActivity
             bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         }
 
-        bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
+        bitmap = scaleBitmap(bitmap);
 
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         bitmap.setDensity(10);
         return bitmap;
+    }
+
+    private static Bitmap scaleBitmap(Bitmap bitmap) {
+        return Bitmap.createScaledBitmap(bitmap, 120, 120, false);
     }
 
     @Override
