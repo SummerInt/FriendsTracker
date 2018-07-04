@@ -2,6 +2,7 @@ package com.teamm.friendstracker.ui;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -63,15 +64,24 @@ public class RegistrationActivity extends AppCompatActivity {
         Name = (EditText) findViewById(R.id.etName);
         Surname = (EditText) findViewById(R.id.etSurname);
         bBegin = (Button)  findViewById(R.id.bBegin);
+        Email = (EditText) findViewById(R.id.etMail);
+        Email.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        Password.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        Password2.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        Name.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        Surname.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
 
         Email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightEmail(Email.getText().toString()))
-                        Email.setBackgroundColor(Color.GREEN);
+                    if(isRightEmail(Email.getText().toString())){
+                        Email.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
                     else
-                        Email.setBackgroundColor(Color.RED);
+                    {
+                        Email.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
                 }
             }
         });
@@ -80,10 +90,12 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightPassword(Password.getText().toString()))
-                        Password.setBackgroundColor(Color.GREEN);
-                    else
-                        Password.setBackgroundColor(Color.RED);
+                    if(isRightPassword(Password.getText().toString())) {
+                        Password.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                        Password.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
                 }
             }
         });
@@ -93,12 +105,14 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
                     if(Password2.getText().toString().equals(Password.getText().toString())){
-                        Password2.setBackgroundColor(Color.GREEN);
+                        Password.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                        Password2.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
                         bBegin.setEnabled(true);
                     }
                     else {
                         Toast.makeText(RegistrationActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
-                        Password2.setBackgroundColor(Color.RED);
+                        Password.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                        Password2.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                         bBegin.setEnabled(false);
                     }
                 }
@@ -109,10 +123,12 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightName(Name.getText().toString()))
-                        Name.setBackgroundColor(Color.GREEN);
-                    else
-                        Name.setBackgroundColor(Color.RED);
+                    if(isRightName(Name.getText().toString())){
+                        Name.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                        Name.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
                 }
             }
         });
@@ -121,10 +137,11 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightSurname(Surname.getText().toString()))
-                        Surname.setBackgroundColor(Color.GREEN);
-                    else
-                        Surname.setBackgroundColor(Color.RED);
+                    if (isRightSurname(Surname.getText().toString())) {
+                        Surname.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    } else{
+                        Surname.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
                 }
             }
         });
