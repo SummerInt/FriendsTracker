@@ -22,36 +22,9 @@ import java.util.Collection;
 
 public class FriendSearchActivity extends AppCompatActivity implements View.OnClickListener{
 
-    //List<User> friends;
-    RVSearchAdapter adapter;
+    static RVSearchAdapter adapter;
     EditText etSearch;
-    private RecyclerView rvSearch;
-
-    private int mInterval = 2000;
-    private Handler mHandler;
-    private Runnable mAdShower = new Runnable() {
-        @Override
-        public void run() {
-            try {
-
-
-                loadResults ();
-
-
-            } finally {
-                mHandler.postDelayed(mAdShower, mInterval);
-            }
-        }
-    };
-
-    private void startTask() {
-        mAdShower.run();
-    }
-
-    private void stopTask() {
-
-        mHandler.removeCallbacks(mAdShower);
-    }
+    private static RecyclerView rvSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,39 +34,29 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rvSearch.setLayoutManager(llm);
         adapter = new RVSearchAdapter();
-        //rvSearch.setAdapter(adapter);
         etSearch = (EditText)findViewById(R.id.etSearch);
         Button bSearch = (Button)findViewById(R.id.bSearch);
         bSearch.setOnClickListener(this);
 
         DbManager.serchFriends.clear();
-        mHandler = new Handler();
-        startTask();
     }
 
 
 
-    private void loadResults() {
+    public static void loadResults() {
         adapter.clearItems();
         adapter.setItems(DbManager.serchFriends);
         rvSearch.setAdapter(adapter);
-    }
-
-    private ArrayList<User> getResult() {
-        ArrayList<User> friends = new ArrayList<User>();
-        friends.add(new User("serbeznoe_mbIlo@mail.ru", "Иван", "Иванов", false, false));
-        friends.add(new User("love_cat@mail.ru", "Лена", "Петрова", false, false));
-        return friends;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bSearch:
+                DbManager.idEmailUsers.clear();
                 DbManager.serchFriends.clear();
                 DbManager.serchFriend(etSearch.getText().toString());
                 Toast.makeText(getApplicationContext(), "Search", Toast.LENGTH_SHORT).show();
-                loadResults();
                 break;
         }
     }

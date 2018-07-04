@@ -18,8 +18,13 @@ import com.google.firebase.storage.StorageReference;
 import com.teamm.friendstracker.model.entity.Coordinats;
 import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.ui.FriendActivity;
+import com.teamm.friendstracker.ui.FriendSearchActivity;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class DbManager {
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();;
@@ -36,6 +41,8 @@ public class DbManager {
     public static ArrayList<Coordinats> coordinats = new ArrayList<Coordinats>();
 
     public static ArrayList<User> serchFriends = new ArrayList<User>();
+
+    public static HashMap<String,String> idEmailUsers = new HashMap<>();
 
     public static void write(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -103,8 +110,10 @@ public class DbManager {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 userFriend = dataSnapshot.getValue(User.class);
-                if(friendsId.indexOf(dataSnapshot.getKey())!=-1)
+                if(friendsId.indexOf(dataSnapshot.getKey())!=-1) {
                     friends.add(userFriend);
+                    FriendActivity.loadFriends();
+                }
             }
 
             @Override
@@ -131,7 +140,6 @@ public class DbManager {
 
     public static void signOut(){
         mAuth.signOut();
-        users = mAuth.getCurrentUser();
     }
 
     public static void saveCoordinats(double latitude, double longitude){
@@ -179,8 +187,11 @@ public class DbManager {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 userFriend = dataSnapshot.getValue(User.class);
-                if(userFriend.getEmail().startsWith(email))
+                if(userFriend.getEmail().startsWith(email)&&userFriend.getEmail()!=user.getEmail()) {
                     serchFriends.add(userFriend);
+                    idEmailUsers.put(userFriend.getEmail(), dataSnapshot.getKey());
+                    FriendSearchActivity.loadResults();
+                }
             }
 
             @Override

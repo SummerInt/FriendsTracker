@@ -17,6 +17,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.PersonViewHolder>{
 
@@ -36,8 +37,7 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
         personViewHolder.bAdd.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                // и тут уже как выше через friends.get(i) получаем инфу userа
-                DbManager.addFriend(DbManager.fromIdToEmail(friends.get(index).getEmail()));
+                DbManager.addFriend(DbManager.idEmailUsers.get(friends.get(index).getEmail()));
             }
         });
 
@@ -78,7 +78,7 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
             tvMail = (TextView)itemView.findViewById(R.id.tvMail);
             bAdd= (Button)itemView.findViewById(R.id.bAdd);
         }
+
     }
 
 }
-

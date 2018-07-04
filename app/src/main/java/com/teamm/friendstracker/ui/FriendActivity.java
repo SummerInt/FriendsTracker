@@ -20,41 +20,14 @@ import java.util.List;
 
 public class FriendActivity extends AppCompatActivity implements View.OnClickListener{
 
-    RecyclerView rvFriends;
+    static RecyclerView rvFriends;
 
-    private int mInterval = 2000;
-    private Handler mHandler;
-    private Runnable mAdShower = new Runnable() {
-        @Override
-        public void run() {
-            try {
-
-
-                loadFriends();
-
-
-            } finally {
-                mHandler.postDelayed(mAdShower, mInterval);
-            }
-        }
-    };
-
-    private void startTask() {
-        mAdShower.run();
-    }
-
-    private void stopTask() {
-
-        mHandler.removeCallbacks(mAdShower);
-    }
-    //List<User> friends;
-    RVFriendsAdapter adapter;
+    static RVFriendsAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend);
-        DbManager.readFriendId();
-        DbManager.readFriends();
+
         rvFriends = (RecyclerView)findViewById(R.id.rvFriends);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rvFriends.setLayoutManager(llm);
@@ -63,14 +36,17 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
 
         Button bAddFriend = (Button)findViewById(R.id.bAddFriend);
         bAddFriend.setOnClickListener(this);
-        //rvFriends.clear();
-        DbManager.friends.clear();
-        mHandler = new Handler();
-        startTask();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DbManager.readFriendId();
+        DbManager.readFriends();
+        DbManager.friends.clear();
+    }
 
-    private void loadFriends() {
+    public static void loadFriends() {
         adapter.clearItems();
         adapter.setItems(DbManager.friends);
         rvFriends.setAdapter(adapter);
