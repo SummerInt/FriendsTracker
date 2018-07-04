@@ -281,6 +281,8 @@ public class MainActivity extends AppCompatActivity
                     public void onSuccess(Location location) {
                         if (location != null) {
                             addMarker(location);
+
+                            addFriendsMarkers();
                         }
                     }
                 });
@@ -290,8 +292,6 @@ public class MainActivity extends AppCompatActivity
         if (locationManager != null) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
         }
-
-        addFriendsMarkers();
 
         GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
             @Override
