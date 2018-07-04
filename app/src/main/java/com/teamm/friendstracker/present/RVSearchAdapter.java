@@ -30,13 +30,14 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
     }
 
     @Override
-    public void onBindViewHolder(PersonViewHolder personViewHolder, final int i) {
-        personViewHolder.tvName.setText(friends.get(i).getName() + " " + friends.get(i).getSurname());
+    public void onBindViewHolder(PersonViewHolder personViewHolder, int i) {
+        final int index = i;
+        personViewHolder.tvName.setText(friends.get(i).getName()+" "+friends.get(i).getSurname());
         personViewHolder.tvMail.setText(friends.get(i).getEmail());
-        personViewHolder.bAdd.setOnClickListener(new View.OnClickListener() {
+        personViewHolder.bAdd.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                DbManager.addFriend(DbManager.idEmailUsers.get(friends.get(i).getEmail()));
+                DbManager.addFriend(DbManager.idEmailUsers.get(friends.get(index).getEmail()));
             }
         });
 
@@ -77,7 +78,6 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
             tvMail = (TextView)itemView.findViewById(R.id.tvMail);
             bAdd= (Button)itemView.findViewById(R.id.bAdd);
         }
-
 
     }
 
