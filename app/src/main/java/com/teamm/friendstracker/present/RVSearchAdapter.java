@@ -17,6 +17,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.PersonViewHolder>{
 
@@ -29,9 +30,16 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
     }
 
     @Override
-    public void onBindViewHolder(PersonViewHolder personViewHolder, int i) {
-        personViewHolder.tvName.setText(friends.get(i).getName()+" "+friends.get(i).getSurname());
+    public void onBindViewHolder(PersonViewHolder personViewHolder, final int i) {
+        personViewHolder.tvName.setText(friends.get(i).getName() + " " + friends.get(i).getSurname());
         personViewHolder.tvMail.setText(friends.get(i).getEmail());
+        personViewHolder.bAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DbManager.addFriend(DbManager.idEmailUsers.get(friends.get(i).getEmail()));
+            }
+        });
+
     }
 
     public void clearItems() {
@@ -56,7 +64,7 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public static class PersonViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class PersonViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView tvName;
         TextView tvMail;
@@ -68,15 +76,9 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
             tvName = (TextView)itemView.findViewById(R.id.tvName);
             tvMail = (TextView)itemView.findViewById(R.id.tvMail);
             bAdd= (Button)itemView.findViewById(R.id.bAdd);
-            itemView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            //тут обработка добавления в друзья
-            //DbManager.addFriend(DbManager.fromIdToEmail(tvMail.getText().toString()));
-        }
+
     }
 
 }
-
