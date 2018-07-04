@@ -66,7 +66,8 @@ import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
 public class MainActivity extends AppCompatActivity
-        implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener{
+        implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener,
+        DbManager.Listener {
 
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
     static final int VISABILITY_RADIUS = 15000;
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        //map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         map.setMinZoomPreference(10);
 
@@ -318,7 +319,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addFriendsMarkers() {
-        DbManager.readCoordinats("test");
+        DbManager manager = new DbManager(this);
+        manager.readCoordinats("test");
 
         LatLng p = new LatLng(54.2f, 48.388101);
         if (friendVisability(p.latitude, p.longitude)) {
@@ -339,9 +341,9 @@ public class MainActivity extends AppCompatActivity
             );
         }
 
-        for (Coordinats coordinats : DbManager.coordinats) {
+        /*for (Coordinats coordinats : DbManager.coordinats) {
             LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
-            if (friendVisability(p.latitude, p.longitude)) {
+            if (friendVisability(position.latitude, position.longitude)) {
                 map.addMarker(new MarkerOptions()
                         .position(position)
                         .title("")
@@ -349,7 +351,7 @@ public class MainActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 );
             }
-        }
+        }*/
     }
 
     private boolean friendVisability(final double flat, final double flng) {
@@ -471,4 +473,20 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    public void onFriendsCoordLoad(Coordinats coord) {
+        DbManager.coordinats.add(coord);
+
+        for (Coordinats coordinats : DbManager.coordinats) {
+            LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
+            if (friendVisability(position.latitude, position.longitude)) {
+                map.addMarker(new MarkerOptions()
+                        .position(position)
+                        .title("")
+                        .snippet("")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                );
+            }
+        }
+    }
 }

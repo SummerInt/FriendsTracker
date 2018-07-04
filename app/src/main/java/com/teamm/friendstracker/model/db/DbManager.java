@@ -44,6 +44,16 @@ public class DbManager {
 
     public static HashMap<String,String> idEmailUsers = new HashMap<>();
 
+    private final Listener listener;
+
+    public DbManager(Listener listener) {
+        this.listener = listener;
+    }
+
+    public interface Listener {
+        void onFriendsCoordLoad(Coordinats coord);
+    }
+
     public static void write(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("FriendsTracker");
@@ -149,13 +159,21 @@ public class DbManager {
         myRef.child("Coordinats").child(users.getUid()).setValue(coordinats);
     }
 
-    public static void readCoordinats(String idUser){
+    public void readCoordinats(String idUser){
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("FriendsTracker").child("Coordinats").child(idUser);
         ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                coordinats.add(dataSnapshot.getValue(Coordinats.class));
+                //coordinats.add(dataSnapshot.getValue(Coordinats.class));
+
+                HashMap map = (HashMap)dataSnapshot.getValue();
+                if (map != null) {
+                    Coordinats coordinat = new Coordinats((double) map.get("latitude"), (double) map.get("longitude"));
+
+                    listener.onFriendsCoordLoad(coordinat);
+
+                }
             }
 
             @Override
