@@ -2,6 +2,7 @@ package com.teamm.friendstracker.ui;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -61,15 +62,19 @@ public class LoginActivity extends AppCompatActivity {
         }
         Email = (EditText) findViewById(R.id.etLogin);
         Password = (EditText) findViewById(R.id.etPasswrd);
+        Email.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        Password.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
 
         Email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightEmail(Email.getText().toString()))
-                        Email.setBackgroundColor(Color.GREEN);
-                    else
-                        Email.setBackgroundColor(Color.RED);
+                    if(isRightEmail(Email.getText().toString())){
+                        Email.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else {
+                        Email.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
                 }
             }
         });
@@ -78,10 +83,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightPassword(Password.getText().toString()))
-                        Password.setBackgroundColor(Color.GREEN);
-                    else
-                        Password.setBackgroundColor(Color.RED);
+                    if(isRightPassword(Password.getText().toString())){
+                        Password.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                        //Password.setBackgroundColor(Color.GREEN);
+                    }
+                    else{
+                        Password.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+                        //Password.setBackgroundColor(Color.RED);
+                    }
                 }
             }
         });

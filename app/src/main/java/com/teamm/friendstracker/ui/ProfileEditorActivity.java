@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -34,9 +35,12 @@ import java.util.regex.Pattern;
 
 public class ProfileEditorActivity extends AppCompatActivity implements View.OnClickListener {
 
-    EditText name, surname;
-    private static final int SELECT_IMAGE = 123 ;
+    EditText name;
+    EditText surname;
+    EditText passwrd1;
+    EditText passwrd2;
     ImageView image;
+    private static final int SELECT_IMAGE = 123 ;
     public static boolean photoChanged = false;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
@@ -49,6 +53,12 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
 
         name=(EditText)findViewById(R.id.etNewName);
         surname=(EditText)findViewById(R.id.etNewSurname);
+        passwrd1=(EditText)findViewById(R.id.etNewPasswrd1);
+        passwrd2=(EditText)findViewById(R.id.etNewPasswrd2);
+        name.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        surname.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
         image=(ImageView) findViewById(R.id.imageV);
 
         name.setText(DbManager.user.getName());
@@ -60,10 +70,12 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightName(name.getText().toString()))
-                        name.setBackgroundColor(Color.GREEN);
-                    else
-                        name.setBackgroundColor(Color.RED);
+                    if(isRightName(name.getText().toString())){
+                        name.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                        name.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
                 }
             }
         });
@@ -72,10 +84,43 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightSurname(surname.getText().toString()))
-                        surname.setBackgroundColor(Color.GREEN);
-                    else
-                        surname.setBackgroundColor(Color.RED);
+                    if(isRightSurname(surname.getText().toString())){
+                        surname.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                        surname.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
+                }
+            }
+        });
+
+        passwrd1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus == false) {
+                    if(isRightPassword(passwrd1.getText().toString())) {
+                        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                       passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
+                }
+            }
+        });
+
+       passwrd2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus == false) {
+                    if(passwrd2.getText().toString().equals(passwrd1.getText().toString())){
+                        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                        passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else {
+                        Toast.makeText(ProfileEditorActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
+                        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                        passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
                 }
             }
         });
@@ -105,6 +150,40 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
 
         if (containsIllegalsString(surname)) {
             Toast.makeText(ProfileEditorActivity.this, "Недопустимые символы в фамилии", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        return result;
+    }
+
+    private boolean isRightPassword(String pass, String pass2) {
+        boolean result = true;
+        if (pass.length() < 6 || pass.length() > 30) {
+            Toast.makeText(this, "Пароль не должен быть меньше 6 символов и не больше 30", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (containsIllegalsString(pass)) {
+            Toast.makeText(this, "Недопустимые символы в пароле", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+        if (pass.equals(pass2) == false) {
+            Toast.makeText(this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return result;
+    }
+
+
+    private boolean isRightPassword(String pass) {
+        boolean result = true;
+        if (pass.length() < 6 || pass.length() > 30) {
+            Toast.makeText(this, "Пароль не должен быть меньше 6 символов и не больше 30", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (containsIllegalsString(pass)) {
+            Toast.makeText(this, "Недопустимые символы в пароле", Toast.LENGTH_SHORT).show();
             result = false;
         }
 
