@@ -56,7 +56,7 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
                 DbManager.idEmailUsers.clear();
                 DbManager.serchFriends.clear();
                 DbManager.serchFriend(etSearch.getText().toString());
-                Toast.makeText(getApplicationContext(), "Search", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Search", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

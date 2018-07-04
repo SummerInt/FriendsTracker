@@ -38,6 +38,8 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
             @Override
             public void onClick(View v) {
                 DbManager.addFriend(DbManager.idEmailUsers.get(friends.get(index).getEmail()));
+                friends.remove(index);
+                notifyDataSetChanged();
             }
         });
 
