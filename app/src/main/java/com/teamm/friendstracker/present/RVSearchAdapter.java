@@ -77,7 +77,7 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.Person
             bAdd= (Button)itemView.findViewById(R.id.bAdd);
         }
 
-        @Override
+        //@Override
         public void onClick(View v) {
             //тут обработка добавления в друзья
             //DbManager.addFriend(DbManager.fromIdToEmail(tvMail.getText().toString()));
