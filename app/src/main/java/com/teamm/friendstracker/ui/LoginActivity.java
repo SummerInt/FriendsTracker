@@ -3,6 +3,7 @@ package com.teamm.friendstracker.ui;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -86,6 +87,15 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
+    }
+
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bReg: {
@@ -101,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private boolean isRightPassword(String pass) {
+        private boolean isRightPassword(String pass) {
         boolean result = true;
         if (pass.length() < 6 || pass.length() > 30) {
             Toast.makeText(LoginActivity.this, "Пароль не должен быть меньше 6 символов и не больше 30", Toast.LENGTH_SHORT).show();
