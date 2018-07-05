@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity
                     public void onSuccess(Location location) {
                         if (location != null) {
                             addMarker(location);
-
+                            saveLastLocation(location);
                             addFriendsMarkers();
                         }
                     }
@@ -318,9 +318,13 @@ public class MainActivity extends AppCompatActivity
         };
     }
 
+    private void saveLastLocation(Location location) {
+        DbManager.saveCoordinats(location.getLatitude(), location.getLongitude());
+    }
+
     private void addFriendsMarkers() {
         DbManager manager = new DbManager(this);
-        manager.readCoordinats("test");
+        //manager.readCoordinats("test");
 
         LatLng p = new LatLng(54.2f, 48.388101);
         if (friendVisability(p.latitude, p.longitude)) {
