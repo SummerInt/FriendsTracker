@@ -169,10 +169,6 @@ public class MainActivity extends AppCompatActivity
         name.setText(nameAndSurname);
         mail.setText(DbManager.user.getEmail());
 
-        /*Glide.with(this)
-                .load(DbManager.getAvatarUri())
-                .into(photo);*/
-
         new DbManager(this).downloadPhoto();
 
         /*Glide.with(this)
@@ -537,5 +533,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPhotoDownload(byte[] bytes) {
         photo.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+
+        userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(photo.getDrawable())));
     }
 }
