@@ -41,7 +41,7 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onResume() {
         super.onResume();
-        DbManager.readFriendId();
+        //DbManager.readFriendId();
         DbManager.readFriends();
         DbManager.friends.clear();
     }
