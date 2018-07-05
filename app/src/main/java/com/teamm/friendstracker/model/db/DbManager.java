@@ -44,6 +44,8 @@ public class DbManager {
 
     public static HashMap<String,String> idEmailUsers = new HashMap<>();
 
+    public static HashMap<String,String> idEmailFriends = new HashMap<>();
+
     private final Listener listener;
 
     public DbManager(Listener listener) {
@@ -120,9 +122,11 @@ public class DbManager {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 userFriend = dataSnapshot.getValue(User.class);
-                if(friendsId.indexOf(dataSnapshot.getKey())!=-1) {
+                String id = dataSnapshot.getKey();
+                if(friendsId.indexOf(id)!=-1) {
                     friends.add(userFriend);
                     FriendActivity.loadFriends();
+                    idEmailFriends.put(id,userFriend.getEmail());
                 }
             }
 
@@ -153,7 +157,7 @@ public class DbManager {
     }
 
     public static void saveCoordinats(double latitude, double longitude){
-        Coordinats coordinats = new Coordinats(latitude,longitude);
+        Coordinats coordinats = new Coordinats(latitude,longitude, users.getUid());
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("FriendsTracker");
         myRef.child("Coordinats").child(users.getUid()).setValue(coordinats);
@@ -161,7 +165,7 @@ public class DbManager {
 
     public void readCoordinats(String idUser){
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("FriendsTracker").child("Coordinats").child(idUser);
+        final DatabaseReference myRef = database.getReference("FriendsTracker").child("Coordinats");
         ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -169,7 +173,7 @@ public class DbManager {
 
                 HashMap map = (HashMap)dataSnapshot.getValue();
                 if (map != null) {
-                    Coordinats coordinat = new Coordinats((double) map.get("latitude"), (double) map.get("longitude"));
+                    Coordinats coordinat = new Coordinats((double) map.get("latitude"), (double) map.get("longitude"),(String) map.get("id"));
 
                     listener.onFriendsCoordLoad(coordinat);
 
