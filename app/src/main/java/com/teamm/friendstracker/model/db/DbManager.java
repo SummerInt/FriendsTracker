@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -53,6 +55,8 @@ public class DbManager {
 
     public interface Listener {
         void onFriendsCoordLoad(Coordinats coord);
+
+        void onPhotoDownload(byte[] bytes);
     }
 
     public static void write() {
@@ -263,5 +267,25 @@ public class DbManager {
                 .getInstance()
                 .getReference()
                 .child(DbManager.users.getUid()).child("avatar.jpg");
+    }
+    
+    public void downloadPhoto() {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference pathReference = storageRef.child(DbManager.users.getUid()).child("avatar.jpg");
+
+
+        pathReference
+                .getBytes(Long.MAX_VALUE)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        listener.onPhotoDownload(bytes);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+            }
+        });
     }
 }
