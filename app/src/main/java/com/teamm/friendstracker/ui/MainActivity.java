@@ -1,4 +1,5 @@
 package com.teamm.friendstracker.ui;
+
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.maps.model.Circle;
@@ -55,7 +56,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -157,12 +159,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void setProfileInfo(){
+    private void setProfileInfo() {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        TextView mail=(TextView) header.findViewById(R.id.tvMail);
-        TextView name=(TextView) header.findViewById(R.id.tvName);
-        String nameAndSurname = DbManager.user.getName()+" "+DbManager.user.getSurname();
+        TextView mail = (TextView) header.findViewById(R.id.tvMail);
+        TextView name = (TextView) header.findViewById(R.id.tvName);
+        String nameAndSurname = DbManager.user.getName() + " " + DbManager.user.getSurname();
         name.setText(nameAndSurname);
         mail.setText(DbManager.user.getEmail());
 
@@ -201,12 +203,19 @@ public class MainActivity extends AppCompatActivity
 
         Switch switch_button = (Switch) notifCount.findViewById(R.id.switchForAppBar);
 
+        if(DbManager.user.isOnline())
+            switch_button.setChecked(true);
+
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if(isChecked){
+                    DbManager.user.setOnline(true);
+                    DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы показываете свое местоположение", Toast.LENGTH_SHORT).show();
                 }else{
+                    DbManager.user.setOnline(false);
+                    DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы не показываете свое местоположение", Toast.LENGTH_SHORT).show();
                 }
 
@@ -219,20 +228,6 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-   /* @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -254,23 +249,22 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case RED_PROF_ACTIVITY_REQUEST:
                 if (resultCode == RESULT_OK) {
                     ImageView iv = (ImageView) findViewById(R.id.ivPhoto);
-                    TextView tvName  = (TextView) findViewById(R.id.tvName);
+                    TextView tvName = (TextView) findViewById(R.id.tvName);
                     String uriStr = data.getStringExtra("photo");
-                    if(!uriStr.isEmpty()){
+                    if (!uriStr.isEmpty()) {
                         Uri selectedImage = Uri.parse(uriStr);
                         iv.setImageURI(null);
                         iv.setImageURI(selectedImage);
                     }
                     String name = data.getStringExtra("name");
                     String surname = data.getStringExtra("surname");
-                    tvName.setText(name+" "+surname);
+                    tvName.setText(name + " " + surname);
 
                     // что выше, наверно не нужно
                     setProfileInfo();
@@ -309,7 +303,7 @@ public class MainActivity extends AppCompatActivity
                     public void onSuccess(Location location) {
                         if (location != null) {
                             addMarker(location);
-
+                            saveLastLocation(location);
                             addFriendsMarkers();
                         }
                     }
@@ -345,9 +339,13 @@ public class MainActivity extends AppCompatActivity
         };
     }
 
+    private void saveLastLocation(Location location) {
+        DbManager.saveCoordinats(location.getLatitude(), location.getLongitude());
+    }
+
     private void addFriendsMarkers() {
         DbManager manager = new DbManager(this);
-        manager.readCoordinats("test");
+        manager.readCoordinats();
 
         /*LatLng p = new LatLng(54.2f, 48.388101);
         if (friendVisability(p.latitude, p.longitude)) {
@@ -395,12 +393,10 @@ public class MainActivity extends AppCompatActivity
 
         /*double dLat  = rad(p2.lat() - p1.lat());
         var dLong = rad(p2.lng() - p1.lng());
-
         var a = sin(dLat/2) * sin(dLat/2) +
                 cos(rad(p1.lat())) * cos(rad(p2.lat())) * sin(dLong/2) * sin(dLong/2);
         var c = 2 * atan2(sqrt(a), sqrt(1-a));
         var d = R * c;
-
         return d.toFixed(3);*/
 
         // получаем расстояние в километрах
@@ -422,17 +418,27 @@ public class MainActivity extends AppCompatActivity
     public void addMarker(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 
-        userMarker = map.addMarker(new MarkerOptions()
-                .position(position)
-                .title(DbManager.user.getName())
-                .snippet(DbManager.user.getSurname())
-                //.icon(BitmapDescriptorFactory
-                //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
-                //)
-                .icon(BitmapDescriptorFactory
-                        .fromBitmap(drawableToBitmap(photo.getDrawable()))
-                )
-        );
+        if (photo.getDrawable() == null) {
+            userMarker = map.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title(DbManager.user.getName())
+                    .snippet(DbManager.user.getSurname())
+
+            );
+        } else {
+            userMarker = map.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title(DbManager.user.getName())
+                    .snippet(DbManager.user.getSurname())
+                    //.icon(BitmapDescriptorFactory
+                    //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
+                    //)
+                    .icon(BitmapDescriptorFactory
+                            .fromBitmap(drawableToBitmap(photo.getDrawable()))
+                    )
+            );
+        }
+
         userMarker.setTag(false);
 
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
@@ -441,7 +447,7 @@ public class MainActivity extends AppCompatActivity
                 .center(position)
                 .radius(VISABILITY_RADIUS)
                 .strokeColor(Color.BLACK)
-                .fillColor(/*R.color.colorVisibilityRadius*/0x05ff0000)
+                .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
                 .strokeWidth(2));
     }
 
@@ -457,7 +463,7 @@ public class MainActivity extends AppCompatActivity
 
         if (drawable instanceof BitmapDrawable) {
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if(bitmapDrawable.getBitmap() != null) {
+            if (bitmapDrawable.getBitmap() != null) {
                 bitmap = bitmapDrawable.getBitmap();
 
                 bitmap = scaleBitmap(bitmap);
@@ -465,7 +471,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
             // Single color bitmap will be created of 1x1 pixel
             bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         } else {
@@ -504,7 +510,7 @@ public class MainActivity extends AppCompatActivity
     public void onFriendsCoordLoad(Coordinats coord) {
         DbManager.coordinats.add(coord);
 
-        for (Coordinats coordinats : DbManager.coordinats) {
+        /*for (Coordinats coordinats : DbManager.coordinats) {
             LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
             if (friendVisability(position.latitude, position.longitude)) {
                 map.addMarker(new MarkerOptions()
@@ -514,6 +520,15 @@ public class MainActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 );
             }
+        }*/
+        LatLng position = new LatLng(coord.getLatitude(), coord.getLongitude());
+        if (friendVisability(position.latitude, position.longitude)) {
+            map.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title("")
+                    .snippet("")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            );
         }
     }
 }
