@@ -333,7 +333,7 @@ public class MainActivity extends AppCompatActivity
 
     private void addFriendsMarkers() {
         DbManager manager = new DbManager(this);
-        manager.readCoordinats("");
+        manager.readCoordinats();
 
         /*LatLng p = new LatLng(54.2f, 48.388101);
         if (friendVisability(p.latitude, p.longitude)) {
