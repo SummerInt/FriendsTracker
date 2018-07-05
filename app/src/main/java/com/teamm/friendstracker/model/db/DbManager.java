@@ -173,9 +173,14 @@ public class DbManager {
 
                 HashMap map = (HashMap)dataSnapshot.getValue();
                 if (map != null) {
-                    Coordinats coordinat = new Coordinats((double) map.get("latitude"), (double) map.get("longitude"),(String) map.get("id"));
+                    String fId = (String) map.get("id");
+                    Coordinats coordinat = new Coordinats((double) map.get("latitude"),
+                            (double) map.get("longitude"),
+                            fId);
 
-                    listener.onFriendsCoordLoad(coordinat);
+                    //if (!fId.equals(DbManager.id)) {
+                        listener.onFriendsCoordLoad(coordinat);
+                    //}
 
                 }
             }
