@@ -1,4 +1,5 @@
 package com.teamm.friendstracker.ui;
+
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
 import com.teamm.friendstracker.model.entity.User;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class FriendSearchActivity extends AppCompatActivity implements View.OnClickListener{
+public class FriendSearchActivity extends AppCompatActivity implements View.OnClickListener {
 
     static RVSearchAdapter adapter;
     EditText etSearch;
@@ -30,17 +31,16 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_search);
-        rvSearch = (RecyclerView)findViewById(R.id.rvResults);
+        rvSearch = (RecyclerView) findViewById(R.id.rvResults);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rvSearch.setLayoutManager(llm);
         adapter = new RVSearchAdapter();
-        etSearch = (EditText)findViewById(R.id.etSearch);
-        Button bSearch = (Button)findViewById(R.id.bSearch);
+        etSearch = (EditText) findViewById(R.id.etSearch);
+        Button bSearch = (Button) findViewById(R.id.bSearch);
         bSearch.setOnClickListener(this);
 
         DbManager.serchFriends.clear();
     }
-
 
 
     public static void loadResults() {

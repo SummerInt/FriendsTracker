@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         DbManager.Listener {
 
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
-    static final int VISABILITY_RADIUS = 55000;
+    static final int VISABILITY_RADIUS = 15000;
 
     View header;
 

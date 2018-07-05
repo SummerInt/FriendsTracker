@@ -63,7 +63,7 @@ public class RegistrationActivity extends AppCompatActivity {
         Password2 = (EditText) findViewById(R.id.etPasswrd2);
         Name = (EditText) findViewById(R.id.etName);
         Surname = (EditText) findViewById(R.id.etSurname);
-        bBegin = (Button)  findViewById(R.id.bBegin);
+        bBegin = (Button) findViewById(R.id.bBegin);
         Email = (EditText) findViewById(R.id.etMail);
         Email.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
         Password.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
@@ -75,11 +75,9 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightEmail(Email.getText().toString())){
+                    if (isRightEmail(Email.getText().toString())) {
                         Email.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    }
-                    else
-                    {
+                    } else {
                         Email.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -90,10 +88,9 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightPassword(Password.getText().toString())) {
+                    if (isRightPassword(Password.getText().toString())) {
                         Password.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    }
-                    else{
+                    } else {
                         Password.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -104,12 +101,11 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(Password2.getText().toString().equals(Password.getText().toString())){
+                    if (Password2.getText().toString().equals(Password.getText().toString())) {
                         Password.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
                         Password2.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
                         bBegin.setEnabled(true);
-                    }
-                    else {
+                    } else {
                         Toast.makeText(RegistrationActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
                         Password.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                         Password2.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
@@ -123,10 +119,9 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightName(Name.getText().toString())){
+                    if (isRightName(Name.getText().toString())) {
                         Name.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    }
-                    else{
+                    } else {
                         Name.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -139,7 +134,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (hasFocus == false) {
                     if (isRightSurname(Surname.getText().toString())) {
                         Surname.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    } else{
+                    } else {
                         Surname.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -262,16 +257,16 @@ public class RegistrationActivity extends AppCompatActivity {
 
     public void reg(final String email, final String password, final String password2, String name, String surname) {
         boolean result = true;
-        if (isRightPassword(password, password2)==false)
+        if (isRightPassword(password, password2) == false)
             result = false;
 
-        if (isRightEmail(email)==false)
+        if (isRightEmail(email) == false)
             result = false;
 
-        if (isRightName(name)==false)
+        if (isRightName(name) == false)
             result = false;
 
-        if (isRightSurname(surname)==false)
+        if (isRightSurname(surname) == false)
             result = false;
 
         if (result) {
