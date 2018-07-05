@@ -178,9 +178,9 @@ public class DbManager {
                             (double) map.get("longitude"),
                             fId);
 
-                    //if (!fId.equals(DbManager.id)) {
+                    if (!fId.equals(DbManager.id)) {
                         listener.onFriendsCoordLoad(coordinat);
-                    //}
+                    }
 
                 }
             }
