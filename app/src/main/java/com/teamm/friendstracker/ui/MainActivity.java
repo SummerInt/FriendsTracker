@@ -349,7 +349,7 @@ public class MainActivity extends AppCompatActivity
         DbManager manager = new DbManager(this);
         manager.readCoordinats("test");
 
-        LatLng p = new LatLng(54.2f, 48.388101);
+        /*LatLng p = new LatLng(54.2f, 48.388101);
         if (friendVisability(p.latitude, p.longitude)) {
             Marker friendMarker = map.addMarker(new MarkerOptions()
                     .position(p)
@@ -358,17 +358,17 @@ public class MainActivity extends AppCompatActivity
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             );
             friendMarker.setTag(false);
-        }
-
+        }*/
+/*
         LatLng pos = new LatLng(54.19f, 48.2f);
         if (friendVisability(pos.latitude, pos.longitude)) {
             map.addMarker(new MarkerOptions()
                     .position(pos)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             );
-        }
+        }*/
 
-        /*for (Coordinats coordinats : DbManager.coordinats) {
+        for (Coordinats coordinats : DbManager.coordinats) {
             LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
             if (friendVisability(position.latitude, position.longitude)) {
                 map.addMarker(new MarkerOptions()
@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 );
             }
-        }*/
+        }
     }
 
     private boolean friendVisability(final double flat, final double flng) {
