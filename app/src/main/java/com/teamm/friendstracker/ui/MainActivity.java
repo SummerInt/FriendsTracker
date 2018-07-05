@@ -1,4 +1,5 @@
 package com.teamm.friendstracker.ui;
+
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.maps.model.Circle;
@@ -55,7 +56,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -157,12 +159,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void setProfileInfo(){
+    private void setProfileInfo() {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        TextView mail=(TextView) header.findViewById(R.id.tvMail);
-        TextView name=(TextView) header.findViewById(R.id.tvName);
-        String nameAndSurname = DbManager.user.getName()+" "+DbManager.user.getSurname();
+        TextView mail = (TextView) header.findViewById(R.id.tvMail);
+        TextView name = (TextView) header.findViewById(R.id.tvName);
+        String nameAndSurname = DbManager.user.getName() + " " + DbManager.user.getSurname();
         name.setText(nameAndSurname);
         mail.setText(DbManager.user.getEmail());
 
@@ -204,9 +206,9 @@ public class MainActivity extends AppCompatActivity
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if(isChecked){
+                if (isChecked) {
                     Toast.makeText(MainActivity.this, "Вы показываете свое местоположение", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Toast.makeText(MainActivity.this, "Вы не показываете свое местоположение", Toast.LENGTH_SHORT).show();
                 }
 
@@ -254,23 +256,22 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case RED_PROF_ACTIVITY_REQUEST:
                 if (resultCode == RESULT_OK) {
                     ImageView iv = (ImageView) findViewById(R.id.ivPhoto);
-                    TextView tvName  = (TextView) findViewById(R.id.tvName);
+                    TextView tvName = (TextView) findViewById(R.id.tvName);
                     String uriStr = data.getStringExtra("photo");
-                    if(!uriStr.isEmpty()){
+                    if (!uriStr.isEmpty()) {
                         Uri selectedImage = Uri.parse(uriStr);
                         iv.setImageURI(null);
                         iv.setImageURI(selectedImage);
                     }
                     String name = data.getStringExtra("name");
                     String surname = data.getStringExtra("surname");
-                    tvName.setText(name+" "+surname);
+                    tvName.setText(name + " " + surname);
 
                     // что выше, наверно не нужно
                     setProfileInfo();
@@ -347,7 +348,7 @@ public class MainActivity extends AppCompatActivity
 
     private void addFriendsMarkers() {
         DbManager manager = new DbManager(this);
-        manager.readCoordinats("test");
+        manager.readCoordinats("");
 
         /*LatLng p = new LatLng(54.2f, 48.388101);
         if (friendVisability(p.latitude, p.longitude)) {
@@ -422,17 +423,27 @@ public class MainActivity extends AppCompatActivity
     public void addMarker(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 
-        userMarker = map.addMarker(new MarkerOptions()
-                .position(position)
-                .title(DbManager.user.getName())
-                .snippet(DbManager.user.getSurname())
-                //.icon(BitmapDescriptorFactory
-                //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
-                //)
-                .icon(BitmapDescriptorFactory
-                        .fromBitmap(drawableToBitmap(photo.getDrawable()))
-                )
-        );
+        if (photo.getDrawable() == null) {
+            userMarker = map.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title(DbManager.user.getName())
+                    .snippet(DbManager.user.getSurname())
+
+            );
+        } else {
+            userMarker = map.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title(DbManager.user.getName())
+                    .snippet(DbManager.user.getSurname())
+                    //.icon(BitmapDescriptorFactory
+                    //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
+                    //)
+                    .icon(BitmapDescriptorFactory
+                            .fromBitmap(drawableToBitmap(photo.getDrawable()))
+                    )
+            );
+        }
+
         userMarker.setTag(false);
 
         map.moveCamera(CameraUpdateFactory.newLatLng(position));
@@ -457,7 +468,7 @@ public class MainActivity extends AppCompatActivity
 
         if (drawable instanceof BitmapDrawable) {
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if(bitmapDrawable.getBitmap() != null) {
+            if (bitmapDrawable.getBitmap() != null) {
                 bitmap = bitmapDrawable.getBitmap();
 
                 bitmap = scaleBitmap(bitmap);
@@ -465,7 +476,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
             // Single color bitmap will be created of 1x1 pixel
             bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         } else {
@@ -504,7 +515,7 @@ public class MainActivity extends AppCompatActivity
     public void onFriendsCoordLoad(Coordinats coord) {
         DbManager.coordinats.add(coord);
 
-        for (Coordinats coordinats : DbManager.coordinats) {
+        /*for (Coordinats coordinats : DbManager.coordinats) {
             LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
             if (friendVisability(position.latitude, position.longitude)) {
                 map.addMarker(new MarkerOptions()
@@ -514,6 +525,15 @@ public class MainActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 );
             }
+        }*/
+        LatLng position = new LatLng(coord.getLatitude(), coord.getLongitude());
+        if (friendVisability(position.latitude, position.longitude)) {
+            map.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title("")
+                    .snippet("")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            );
         }
     }
 }
