@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -35,10 +36,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -189,10 +195,31 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        MenuItem item = menu.findItem(R.id.app_bar_switch);
+        MenuItemCompat.setActionView(item, R.layout.switch_item);
+        RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
+
+        Switch switch_button = (Switch) notifCount.findViewById(R.id.switchForAppBar);
+
+        switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+                    Toast.makeText(MainActivity.this, "Вы показываете свое местоположение", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(MainActivity.this, "Вы не показываете свое местоположение", Toast.LENGTH_SHORT).show();
+                }
+
+
+                // do something, the isChecked will be
+                // true if the switch is in the On position
+                // otherwise it will be false
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
+   /* @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -205,7 +232,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
