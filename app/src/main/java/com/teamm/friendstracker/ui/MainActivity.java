@@ -17,6 +17,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.camera2.DngCreator;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         DbManager.Listener {
 
     static final int RED_PROF_ACTIVITY_REQUEST = 2;
-    static final int VISABILITY_RADIUS = 15000;
+    static final int VISABILITY_RADIUS = 55000;
 
     View header;
 
@@ -168,14 +169,12 @@ public class MainActivity extends AppCompatActivity
         name.setText(nameAndSurname);
         mail.setText(DbManager.user.getEmail());
 
-        /*Glide.with(this)
-                .load(DbManager.avatarDownload())
-                .into(photo);*/
+        new DbManager(this).downloadPhoto();
 
-        Glide.with(this)
+        /*Glide.with(this)
                 .using(new FirebaseImageLoader())
                 .load(DbManager.getAvatarStorageReference())
-                .into(photo);
+                .into(photo);*/
     }
 
 
@@ -247,7 +246,7 @@ public class MainActivity extends AppCompatActivity
                     String uriStr = data.getStringExtra("photo");
                     if (!uriStr.isEmpty()) {
                         Uri selectedImage = Uri.parse(uriStr);
-                        iv.setImageURI(null);
+                        //iv.setImageURI(null);
                         iv.setImageURI(selectedImage);
                     }
                     String name = data.getStringExtra("name");
@@ -354,7 +353,7 @@ public class MainActivity extends AppCompatActivity
             );
         }*/
 
-        for (Coordinats coordinats : DbManager.coordinats) {
+        /*for (Coordinats coordinats : DbManager.coordinats) {
             LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
             if (friendVisability(position.latitude, position.longitude)) {
                 map.addMarker(new MarkerOptions()
@@ -364,7 +363,7 @@ public class MainActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 );
             }
-        }
+        }*/
     }
 
     private boolean friendVisability(final double flat, final double flng) {
@@ -498,8 +497,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFriendsCoordLoad(Coordinats coord) {
-        DbManager.coordinats.add(coord);
-
         /*for (Coordinats coordinats : DbManager.coordinats) {
             LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
             if (friendVisability(position.latitude, position.longitude)) {
@@ -512,13 +509,31 @@ public class MainActivity extends AppCompatActivity
             }
         }*/
         LatLng position = new LatLng(coord.getLatitude(), coord.getLongitude());
-        if (friendVisability(position.latitude, position.longitude)) {
+
+        boolean flag_visible = false;
+        for (String fId : DbManager.friendsId) {
+            if (fId.equals(coord.getId())) {
+                flag_visible = true;
+                break;
+            }
+        }
+
+        if (friendVisability(position.latitude, position.longitude) && flag_visible) {
+            DbManager.coordinats.add(coord);
+
             map.addMarker(new MarkerOptions()
                     .position(position)
-                    .title("")
+                    //.title(DbManager.friends.get(coord.getId()))
                     .snippet("")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             );
         }
+    }
+
+    @Override
+    public void onPhotoDownload(byte[] bytes) {
+        photo.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+
+        userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(photo.getDrawable())));
     }
 }

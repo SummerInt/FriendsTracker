@@ -3,6 +3,7 @@ package com.teamm.friendstracker.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
@@ -26,6 +27,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
+import com.teamm.friendstracker.model.entity.Coordinats;
 import com.teamm.friendstracker.model.entity.User;
 
 import java.io.ByteArrayOutputStream;
@@ -33,14 +35,14 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ProfileEditorActivity extends AppCompatActivity implements View.OnClickListener {
+public class ProfileEditorActivity extends AppCompatActivity implements View.OnClickListener, DbManager.Listener {
 
     EditText name;
     EditText surname;
     EditText passwrd1;
     EditText passwrd2;
     ImageView image;
-    private static final int SELECT_IMAGE = 123 ;
+    private static final int SELECT_IMAGE = 123;
     public static boolean photoChanged = false;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
@@ -51,29 +53,28 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_editor);
 
-        name=(EditText)findViewById(R.id.etNewName);
-        surname=(EditText)findViewById(R.id.etNewSurname);
-        passwrd1=(EditText)findViewById(R.id.etNewPasswrd1);
-        passwrd2=(EditText)findViewById(R.id.etNewPasswrd2);
+        name = (EditText) findViewById(R.id.etNewName);
+        surname = (EditText) findViewById(R.id.etNewSurname);
+        passwrd1 = (EditText) findViewById(R.id.etNewPasswrd1);
+        passwrd2 = (EditText) findViewById(R.id.etNewPasswrd2);
         name.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
         surname.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
         passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
         passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
-        image=(ImageView) findViewById(R.id.imageV);
+        image = (ImageView) findViewById(R.id.imageV);
 
         name.setText(DbManager.user.getName());
         surname.setText(DbManager.user.getSurname());
-        if(DbManager.user.getAvatar())
+        if (DbManager.user.getAvatar())
             avatarDownload();
 
         name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightName(name.getText().toString())){
+                    if (isRightName(name.getText().toString())) {
                         name.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    }
-                    else{
+                    } else {
                         name.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -84,10 +85,9 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightSurname(surname.getText().toString())){
+                    if (isRightSurname(surname.getText().toString())) {
                         surname.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    }
-                    else{
+                    } else {
                         surname.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -98,25 +98,23 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(isRightPassword(passwrd1.getText().toString())) {
+                    if (isRightPassword(passwrd1.getText().toString())) {
                         passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    }
-                    else{
-                       passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    } else {
+                        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
             }
         });
 
-       passwrd2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        passwrd2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if(passwrd2.getText().toString().equals(passwrd1.getText().toString())){
+                    if (passwrd2.getText().toString().equals(passwrd1.getText().toString())) {
                         passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
                         passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    }
-                    else {
+                    } else {
                         Toast.makeText(ProfileEditorActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
                         passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                         passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
@@ -196,8 +194,8 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
         return matcher.find();
     }
 
-    public void onClick(View view){
-        switch (view.getId()){
+    public void onClick(View view) {
+        switch (view.getId()) {
 
             case R.id.bChangePhoto: {
                 Intent intent = new Intent();
@@ -208,8 +206,8 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             }
 
             case R.id.bAccept: {
-                if(isRightName(name.getText().toString()))
-                    if(isRightSurname(surname.getText().toString())) {
+                if (isRightName(name.getText().toString()))
+                    if (isRightSurname(surname.getText().toString())) {
                         DbManager.user.setName(name.getText().toString());
                         DbManager.user.setSurname(surname.getText().toString());
                         if (photoChanged) {
@@ -219,8 +217,7 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
                         DbManager.write();
                         finish();
                         //Toast.makeText(getApplicationContext(), "Сохранено", Toast.LENGTH_SHORT).show();
-                    }
-                    else
+                    } else
                         isRightSurname(surname.getText().toString());
                 break;
             }
@@ -235,8 +232,7 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECT_IMAGE) {
             if (resultCode == Activity.RESULT_OK) {
@@ -256,7 +252,7 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-    public void avatarSave(){
+    public void avatarSave() {
         image.setDrawingCacheEnabled(true);
         image.buildDrawingCache();
         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
@@ -279,12 +275,24 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-    public void avatarDownload(){
+    public void avatarDownload() {
         //image.setImageURI(DbManager.getAvatarUri());
 
-        Glide.with(this)
+        new DbManager(this).downloadPhoto();
+
+        /*Glide.with(this)
                 .using(new FirebaseImageLoader())
                 .load(DbManager.getAvatarStorageReference())
-                .into(image);
+                .into(image);*/
+    }
+
+    @Override
+    public void onFriendsCoordLoad(Coordinats coord) {
+        //do nothing
+    }
+
+    @Override
+    public void onPhotoDownload(byte[] bytes) {
+        image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
     }
 }
