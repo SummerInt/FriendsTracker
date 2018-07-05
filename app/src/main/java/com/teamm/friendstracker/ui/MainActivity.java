@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity
             );
         }*/
 
-        for (Coordinats coordinats : DbManager.coordinats) {
+        /*for (Coordinats coordinats : DbManager.coordinats) {
             LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
             if (friendVisability(position.latitude, position.longitude)) {
                 map.addMarker(new MarkerOptions()
@@ -364,7 +364,7 @@ public class MainActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 );
             }
-        }
+        }*/
     }
 
     private boolean friendVisability(final double flat, final double flng) {
@@ -512,10 +512,19 @@ public class MainActivity extends AppCompatActivity
             }
         }*/
         LatLng position = new LatLng(coord.getLatitude(), coord.getLongitude());
-        if (friendVisability(position.latitude, position.longitude)) {
+
+        boolean flag_visible = false;
+        for (String fId : DbManager.friendsId) {
+            if (fId.equals(coord.getId())) {
+                flag_visible = true;
+                break;
+            }
+        }
+
+        if (friendVisability(position.latitude, position.longitude) && flag_visible) {
             map.addMarker(new MarkerOptions()
                     .position(position)
-                    .title("")
+                    //.title(DbManager.friends.get(coord.getId()))
                     .snippet("")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             );
