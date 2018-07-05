@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             DbManager.id = user.getUid();
+            DbManager.readFriendId();
             DbManager.read();
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);

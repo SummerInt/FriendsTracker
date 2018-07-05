@@ -123,6 +123,7 @@ public class DbManager {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 userFriend = dataSnapshot.getValue(User.class);
                 String id = dataSnapshot.getKey();
+                friendsId.add(id);
                 if(friendsId.indexOf(id)!=-1) {
                     friends.add(userFriend);
                     FriendActivity.loadFriends();
@@ -178,7 +179,15 @@ public class DbManager {
                             (double) map.get("longitude"),
                             fId);
 
-                    if (!fId.equals(DbManager.id)) {
+                    boolean flag = false;
+                    for(String frId :friendsId) {
+                        if (frId.equals(fId)) {
+                            flag = true;
+                            break;
+                        }
+                    }
+
+                    if (!fId.equals(DbManager.id) && (flag)) {
                         listener.onFriendsCoordLoad(coordinat);
                     }
 
