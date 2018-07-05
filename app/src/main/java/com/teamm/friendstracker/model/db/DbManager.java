@@ -32,7 +32,6 @@ public class DbManager {
     public static FirebaseUser users = mAuth.getInstance().getCurrentUser();
     public static User user = new User();
     public static User userFriend = new User();
-    public static String id;
 
     public static ArrayList<User> friends = new ArrayList<User>();
 
@@ -56,11 +55,13 @@ public class DbManager {
         void onFriendsCoordLoad(Coordinats coord);
     }
 
-    public static void write(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("FriendsTracker");
-        users = mAuth.getCurrentUser();
-        myRef.child("Users").child(users.getUid()).setValue(user);
+    public static void write() {
+        if (user.getName() != null && user.getEmail() != null && user.getSurname() != null) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("FriendsTracker");
+            users = mAuth.getCurrentUser();
+            myRef.child("Users").child(users.getUid()).setValue(user);
+        }
     }
 
     public static void read(){
@@ -79,6 +80,7 @@ public class DbManager {
             }
 
         });
+        DbManager.readFriendId();
     }
 
     public static void readFriendId(){
@@ -123,7 +125,6 @@ public class DbManager {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 userFriend = dataSnapshot.getValue(User.class);
                 String id = dataSnapshot.getKey();
-                friendsId.add(id);
                 if(friendsId.indexOf(id)!=-1) {
                     friends.add(userFriend);
                     FriendActivity.loadFriends();
@@ -158,39 +159,30 @@ public class DbManager {
     }
 
     public static void saveCoordinats(double latitude, double longitude){
-        Coordinats coordinats = new Coordinats(latitude,longitude, users.getUid());
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("FriendsTracker");
-        myRef.child("Coordinats").child(users.getUid()).setValue(coordinats);
+        if(user.isOnline()) {
+            Coordinats coordinats = new Coordinats(latitude, longitude, users.getUid());
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("FriendsTracker");
+            myRef.child("Coordinats").child(users.getUid()).setValue(coordinats);
+        }
     }
 
-    public void readCoordinats(String idUser){
+    public void readCoordinats(){
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("FriendsTracker").child("Coordinats");
         ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 //coordinats.add(dataSnapshot.getValue(Coordinats.class));
+                if(friendsId.indexOf(dataSnapshot.getKey())!= -1) {
 
-                HashMap map = (HashMap)dataSnapshot.getValue();
-                if (map != null) {
-                    String fId = (String) map.get("id");
-                    Coordinats coordinat = new Coordinats((double) map.get("latitude"),
-                            (double) map.get("longitude"),
-                            fId);
+                    HashMap map = (HashMap) dataSnapshot.getValue();
+                    if (map != null) {
+                        Coordinats coordinat = new Coordinats((double) map.get("latitude"), (double) map.get("longitude"), (String) map.get("id"));
 
-                    boolean flag = false;
-                    for(String frId :friendsId) {
-                        if (frId.equals(fId)) {
-                            flag = true;
-                            break;
-                        }
-                    }
-
-                    if (!fId.equals(DbManager.id) && (flag)) {
                         listener.onFriendsCoordLoad(coordinat);
-                    }
 
+                    }
                 }
             }
 
@@ -222,10 +214,11 @@ public class DbManager {
         ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String key = dataSnapshot.getKey();
                 userFriend = dataSnapshot.getValue(User.class);
-                if(userFriend.getEmail().startsWith(email)&&userFriend.getEmail()!=user.getEmail()) {
+                if (userFriend.getEmail().startsWith(email) && userFriend.getEmail() != user.getEmail() && friendsId.indexOf(key) == -1) {
                     serchFriends.add(userFriend);
-                    idEmailUsers.put(userFriend.getEmail(), dataSnapshot.getKey());
+                    idEmailUsers.put(userFriend.getEmail(), key);
                     FriendSearchActivity.loadResults();
                 }
             }
@@ -256,41 +249,6 @@ public class DbManager {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("FriendsTracker");
         myRef.child("Friends").child(users.getUid()).child(id).setValue(true);
-    }
-
-    public static String fromIdToEmail(final String email){
-
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("FriendsTracker").child("Users");
-        ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                userFriend = dataSnapshot.getValue(User.class);
-                if(userFriend.getEmail().equals(email))
-                    id=dataSnapshot.getKey();
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        return id;
     }
 
     public static Uri getAvatarUri() {
