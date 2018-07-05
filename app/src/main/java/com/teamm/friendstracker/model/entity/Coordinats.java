@@ -31,11 +31,11 @@ public class Coordinats {
         this.longitude = longitude;
     }
 
-    public String getKey() {
+    public String getId() {
         return id;
     }
 
-    public void setKey(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 }
