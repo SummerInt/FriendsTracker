@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity
                     public void onSuccess(Location location) {
                         if (location != null) {
                             addMarker(location);
-
+                            saveLastLocation(location);
                             addFriendsMarkers();
                         }
                     }
@@ -344,6 +344,10 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
         };
+    }
+
+    private void saveLastLocation(Location location) {
+        DbManager.saveCoordinats(location.getLatitude(), location.getLongitude());
     }
 
     private void addFriendsMarkers() {
@@ -452,7 +456,7 @@ public class MainActivity extends AppCompatActivity
                 .center(position)
                 .radius(VISABILITY_RADIUS)
                 .strokeColor(Color.BLACK)
-                .fillColor(/*R.color.colorVisibilityRadius*/0x05ff0000)
+                .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
                 .strokeWidth(2));
     }
 
