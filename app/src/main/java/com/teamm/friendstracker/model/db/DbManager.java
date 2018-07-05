@@ -56,11 +56,13 @@ public class DbManager {
         void onFriendsCoordLoad(Coordinats coord);
     }
 
-    public static void write(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("FriendsTracker");
-        users = mAuth.getCurrentUser();
-        myRef.child("Users").child(users.getUid()).setValue(user);
+    public static void write() {
+        if (user.getName() != null && user.getEmail() != null && user.getSurname() != null) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("FriendsTracker");
+            users = mAuth.getCurrentUser();
+            myRef.child("Users").child(users.getUid()).setValue(user);
+        }
     }
 
     public static void read(){
@@ -79,6 +81,7 @@ public class DbManager {
             }
 
         });
+        DbManager.readFriendId();
     }
 
     public static void readFriendId(){
@@ -157,31 +160,30 @@ public class DbManager {
     }
 
     public static void saveCoordinats(double latitude, double longitude){
-        Coordinats coordinats = new Coordinats(latitude,longitude, users.getUid());
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("FriendsTracker");
-        myRef.child("Coordinats").child(users.getUid()).setValue(coordinats);
+        if(user.isOnline()) {
+            Coordinats coordinats = new Coordinats(latitude, longitude, users.getUid());
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("FriendsTracker");
+            myRef.child("Coordinats").child(users.getUid()).setValue(coordinats);
+        }
     }
 
-    public void readCoordinats(String idUser){
+    public void readCoordinats(){
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("FriendsTracker").child("Coordinats");
         ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 //coordinats.add(dataSnapshot.getValue(Coordinats.class));
+                if(friendsId.indexOf(dataSnapshot.getKey())!= -1) {
 
-                HashMap map = (HashMap)dataSnapshot.getValue();
-                if (map != null) {
-                    String fId = (String) map.get("id");
-                    Coordinats coordinat = new Coordinats((double) map.get("latitude"),
-                            (double) map.get("longitude"),
-                            fId);
+                    HashMap map = (HashMap) dataSnapshot.getValue();
+                    if (map != null) {
+                        Coordinats coordinat = new Coordinats((double) map.get("latitude"), (double) map.get("longitude"), (String) map.get("id"));
 
-                    if (!fId.equals(DbManager.id)) {
                         listener.onFriendsCoordLoad(coordinat);
-                    }
 
+                    }
                 }
             }
 
@@ -213,10 +215,11 @@ public class DbManager {
         ChildEventListener valueEventListener = myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String key = dataSnapshot.getKey();
                 userFriend = dataSnapshot.getValue(User.class);
-                if(userFriend.getEmail().startsWith(email)&&userFriend.getEmail()!=user.getEmail()) {
+                if (userFriend.getEmail().startsWith(email) && userFriend.getEmail() != user.getEmail() && friendsId.indexOf(key) == -1) {
                     serchFriends.add(userFriend);
-                    idEmailUsers.put(userFriend.getEmail(), dataSnapshot.getKey());
+                    idEmailUsers.put(userFriend.getEmail(), key);
                     FriendSearchActivity.loadResults();
                 }
             }

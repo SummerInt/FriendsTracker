@@ -203,12 +203,19 @@ public class MainActivity extends AppCompatActivity
 
         Switch switch_button = (Switch) notifCount.findViewById(R.id.switchForAppBar);
 
+        if(DbManager.user.isOnline())
+            switch_button.setChecked(true);
+
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked) {
+                if(isChecked){
+                    DbManager.user.setOnline(true);
+                    DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы показываете свое местоположение", Toast.LENGTH_SHORT).show();
-                } else {
+                }else{
+                    DbManager.user.setOnline(false);
+                    DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы не показываете свое местоположение", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -333,7 +340,7 @@ public class MainActivity extends AppCompatActivity
 
     private void addFriendsMarkers() {
         DbManager manager = new DbManager(this);
-        manager.readCoordinats("");
+        manager.readCoordinats();
 
         /*LatLng p = new LatLng(54.2f, 48.388101);
         if (friendVisability(p.latitude, p.longitude)) {
@@ -381,12 +388,10 @@ public class MainActivity extends AppCompatActivity
 
         /*double dLat  = rad(p2.lat() - p1.lat());
         var dLong = rad(p2.lng() - p1.lng());
-
         var a = sin(dLat/2) * sin(dLat/2) +
                 cos(rad(p1.lat())) * cos(rad(p2.lat())) * sin(dLong/2) * sin(dLong/2);
         var c = 2 * atan2(sqrt(a), sqrt(1-a));
         var d = R * c;
-
         return d.toFixed(3);*/
 
         // получаем расстояние в километрах
