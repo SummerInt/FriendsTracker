@@ -17,8 +17,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
+import com.teamm.friendstracker.model.entity.Coordinats;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-
+            DbManager.id = user.getUid();
             DbManager.read();
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);

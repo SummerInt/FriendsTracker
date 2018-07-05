@@ -218,11 +218,6 @@ public class MainActivity extends AppCompatActivity
                     DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы не показываете свое местоположение", Toast.LENGTH_SHORT).show();
                 }
-
-
-                // do something, the isChecked will be
-                // true if the switch is in the On position
-                // otherwise it will be false
             }
         });
         return super.onCreateOptionsMenu(menu);
