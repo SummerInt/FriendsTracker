@@ -39,11 +39,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Coordinats coordinats = new Coordinats(54.325761,48.388101, "gM52pp3uQrUeUR5mDlFxTDk3TlB3");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("FriendsTracker");
-        myRef.child("Coordinats").child("gM52pp3uQrUeUR5mDlFxTDk3TlB3").setValue(coordinats);
-
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
