@@ -151,7 +151,7 @@ public class RegistrationActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bBegin: {
-                reg(Email.getText().toString(), Password.getText().toString(), Password2.getText().toString(), Name.getText().toString(), Surname.getText().toString());
+                reg(Email.getText().toString().toLowerCase(), Password.getText().toString(), Password2.getText().toString(), Name.getText().toString(), Surname.getText().toString());
                 break;
             }
 

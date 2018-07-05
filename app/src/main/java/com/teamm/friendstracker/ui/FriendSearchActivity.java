@@ -55,7 +55,10 @@ public class FriendSearchActivity extends AppCompatActivity implements View.OnCl
             case R.id.bSearch:
                 DbManager.idEmailUsers.clear();
                 DbManager.serchFriends.clear();
-                DbManager.serchFriend(etSearch.getText().toString());
+                DbManager.serchFriend(etSearch.getText().toString().toLowerCase());
+                adapter.clearItems();
+                adapter.setItems(DbManager.serchFriends);
+                rvSearch.setAdapter(adapter);
                 //Toast.makeText(getApplicationContext(), "Search", Toast.LENGTH_SHORT).show();
                 break;
         }
