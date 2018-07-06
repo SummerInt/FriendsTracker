@@ -23,12 +23,25 @@
             android:layout_height="120dp"
             android:orientation="horizontal">
 
-            <ImageView
+            <com.makeramen.roundedimageview.RoundedImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/imageV"
+                android:layout_width="@dimen/profile_photo_hw"
+                android:layout_height="@dimen/profile_photo_hw"
+                android:layout_weight="1"
+                app:riv_corner_radius="65dp"
+                app:riv_border_width="2dip"
+                app:riv_border_color="#333333"
+                app:riv_mutate_background="true"
+                app:riv_tile_mode="repeat"
+                app:srcCompat="@drawable/degault_prof_photo" />
+
+            <!--<ImageView
                 android:id="@+id/imageV"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/degault_prof_photo" />
+                app:srcCompat="@drawable/degault_prof_photo" />-->
 
             <Button
                 android:id="@+id/bChangePhoto"
