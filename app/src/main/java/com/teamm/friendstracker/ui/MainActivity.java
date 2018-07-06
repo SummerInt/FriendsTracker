@@ -1,558 +1,359 @@
 package com.teamm.friendstracker.ui;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.Marker;
-import com.makeramen.roundedimageview.RoundedImageView;
-import com.teamm.friendstracker.model.entity.Coordinats;
-import com.teamm.friendstracker.model.entity.User;
-import com.teamm.friendstracker.view.MapView;
-
-import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.hardware.camera2.DngCreator;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.CompoundButton;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.teamm.friendstracker.R;
 import com.teamm.friendstracker.model.db.DbManager;
+import com.teamm.friendstracker.model.entity.Coordinats;
+import com.teamm.friendstracker.model.entity.User;
 
-import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
+public class ProfileEditorActivity extends AppCompatActivity implements View.OnClickListener, DbManager.Listener {
 
-public class MainActivity extends AppCompatActivity
-        implements MapView, OnMapReadyCallback, LocationListener, NavigationView.OnNavigationItemSelectedListener,
-        DbManager.Listener {
-
-    static final int RED_PROF_ACTIVITY_REQUEST = 2;
-    static final int VISABILITY_RADIUS = 15000;
-
-    View header;
-
-    public static Switch switch_button;
-
-    RoundedImageView photo;
-    int photoRes;
-
-    GoogleMap map;
-    Marker userMarker;
-
-    private int mInterval = 2000;
-    private Handler mHandler;
-    private Runnable mAdShower = new Runnable() {
-        @Override
-        public void run() {
-            try {
-
-                setProfileInfo();
-
-            } finally {
-                mHandler.postDelayed(mAdShower, mInterval);
-            }
-        }
-    };
-
-    private void startTask() {
-        mAdShower.run();
-    }
-
-    private void stopTask() {
-
-        mHandler.removeCallbacks(mAdShower);
-    }
-
+    EditText name;
+    EditText surname;
+    EditText passwrd;
+    EditText passwrd1;
+    EditText passwrd2;
+    ImageView image;
+    private static final int SELECT_IMAGE = 123;
+    public static boolean photoChanged = false;
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
+    StorageReference mountainsRef = storageRef.child(DbManager.users.getUid()).child("avatar.jpg");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_profile_editor);
 
-        setSupportActionBar(toolbar);
+        name=(EditText)findViewById(R.id.etNewName);
+        surname=(EditText)findViewById(R.id.etNewSurname);
+        passwrd=(EditText)findViewById(R.id.etPasswrd);
+        passwrd1=(EditText)findViewById(R.id.etNewPasswrd1);
+        passwrd2=(EditText)findViewById(R.id.etNewPasswrd2);
+        name.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        surname.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        passwrd.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        image=(ImageView) findViewById(R.id.imageV);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        name.setText(DbManager.user.getName());
+        surname.setText(DbManager.user.getSurname());
+        if(DbManager.user.getAvatar())
+            avatarDownload();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        header = navigationView.getHeaderView(0);
-
-        photoRes = R.id.ivPhoto;
-        photo = header.findViewById(photoRes);
-
-        setProfileInfo();
-
-        LinearLayout menuHeadLayout = (LinearLayout) header.findViewById(R.id.mHeadLayout);
-        menuHeadLayout.setOnClickListener(new View.OnClickListener() {
+        name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
-                if (v.getId() == R.id.mHeadLayout) {
-                    Intent intent = new Intent(MainActivity.this, ProfileEditorActivity.class);
-                    setResult(RESULT_OK, intent);
-                    startActivityForResult(intent, RED_PROF_ACTIVITY_REQUEST);
-                }
-            }
-        });
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        DbManager.read();
-        mHandler = new Handler();
-        startTask();
-
-    }
-
-    private void setProfileInfo() {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        TextView mail = (TextView) header.findViewById(R.id.tvMail);
-        TextView name = (TextView) header.findViewById(R.id.tvName);
-        String nameAndSurname = DbManager.user.getName() + " " + DbManager.user.getSurname();
-        name.setText(nameAndSurname);
-        mail.setText(DbManager.user.getEmail());
-
-        new DbManager(this).downloadPhoto();
-
-        /*Glide.with(this)
-                .using(new FirebaseImageLoader())
-                .load(DbManager.getAvatarStorageReference())
-                .into(photo);*/
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            startActivity(intent);
-            //super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem item = menu.findItem(R.id.app_bar_switch);
-        MenuItemCompat.setActionView(item, R.layout.switch_item);
-        RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
-
-        switch_button = (Switch) notifCount.findViewById(R.id.switchForAppBar);
-
-        switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if(isChecked){
-                    DbManager.user.setOnline(true);
-                    DbManager.write();
-                    Toast.makeText(MainActivity.this, "Вы показываете свое местоположение", Toast.LENGTH_SHORT).show();
-                }else{
-                    DbManager.user.setOnline(false);
-                    DbManager.write();
-                    Toast.makeText(MainActivity.this, "Вы не показываете свое местоположение", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_friends) {
-            Intent intent = new Intent(this, FriendActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_exit) {
-            DbManager.signOut();
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case RED_PROF_ACTIVITY_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    ImageView iv = (ImageView) findViewById(R.id.ivPhoto);
-                    TextView tvName = (TextView) findViewById(R.id.tvName);
-                    String uriStr = data.getStringExtra("photo");
-                    if (!uriStr.isEmpty()) {
-                        Uri selectedImage = Uri.parse(uriStr);
-                        //iv.setImageURI(null);
-                        iv.setImageURI(selectedImage);
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus == false) {
+                    if(isRightName(name.getText().toString())){
+                        name.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
                     }
-                    String name = data.getStringExtra("name");
-                    String surname = data.getStringExtra("surname");
-                    tvName.setText(name + " " + surname);
-
-                    // что выше, наверно не нужно
-                    setProfileInfo();
+                    else{
+                        name.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
                 }
+            }
+        });
+
+        surname.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus == false) {
+                    if(isRightSurname(surname.getText().toString())){
+                        surname.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                        surname.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
+                }
+            }
+        });
+
+        passwrd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus == false) {
+                    if(isRightPassword(passwrd.getText().toString())) {
+                        passwrd.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                        passwrd.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
+                }
+            }
+        });
+
+        passwrd1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus == false) {
+                    if(isRightPassword(passwrd1.getText().toString())) {
+                        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
+                }
+            }
+        });
+
+        passwrd2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus == false) {
+                    if(passwrd2.getText().toString().equals(passwrd1.getText().toString())){
+                        passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else {
+                        Toast.makeText(ProfileEditorActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
+                        passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
+                }
+            }
+        });
+    }
+
+    private boolean isRightName(String name) {
+        boolean result = true;
+        if (name.length() < 1 || name.length() > 255) {
+            Toast.makeText(ProfileEditorActivity.this, "Имя не может быть меньше 1 символа или больше 255", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (containsIllegalsString(name)) {
+            Toast.makeText(ProfileEditorActivity.this, "Недопустимые символы в имени", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        return result;
+    }
+
+    private boolean isRightSurname(String surname) {
+        boolean result = true;
+        if (surname.length() < 1 || surname.length() > 255) {
+            Toast.makeText(ProfileEditorActivity.this, "Фамилия не может быть меньше 1 символа или больше 255", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (containsIllegalsString(surname)) {
+            Toast.makeText(ProfileEditorActivity.this, "Недопустимые символы в фамилии", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        return result;
+    }
+
+    private boolean isRightPassword(String pass, String pass2) {
+        boolean result = true;
+        if (pass.length() < 6 || pass.length() > 30) {
+            Toast.makeText(this, "Пароль не должен быть меньше 6 символов и не больше 30", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (containsIllegalsString(pass)) {
+            Toast.makeText(this, "Недопустимые символы в пароле", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+        if (pass.equals(pass2) == false) {
+            Toast.makeText(this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return result;
+    }
+
+
+    private boolean isRightPassword(String pass) {
+        boolean result = true;
+        if (pass.length() < 6 || pass.length() > 30) {
+            Toast.makeText(this, "Пароль не должен быть меньше 6 символов и не больше 30", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (containsIllegalsString(pass)) {
+            Toast.makeText(this, "Недопустимые символы в пароле", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        return result;
+    }
+
+    public boolean containsIllegalsString(String toExamine) {
+        Pattern pattern = Pattern.compile("[- @!№;%:?*_+#$^&{}\\[\\]]");
+        Matcher matcher = pattern.matcher(toExamine);
+        return matcher.find();
+    }
+
+    public void onClick(View view){
+        switch (view.getId()){
+
+            case R.id.bChangePhoto: {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);//
+                startActivityForResult(Intent.createChooser(intent, "Выберите изображение"), SELECT_IMAGE);
                 break;
+            }
+
+            case R.id.bAccept: {
+                if(passwrd.getText().toString().equals("")== false || passwrd1.getText().toString().equals("")== false || passwrd2.getText().toString().equals("")== false) {
+                    if(isRightPassword(passwrd.getText().toString())) {
+                        if (isRightPassword(passwrd1.getText().toString(), passwrd2.getText().toString())) {
+                            newPass(DbManager.user.getEmail(), passwrd.getText().toString(), passwrd1.getText().toString());
+                        }
+                        else return;
+                    }
+                    else return;
+
+                }
+                if(isRightName(name.getText().toString()))
+                    if(isRightSurname(surname.getText().toString())) {
+                        DbManager.user.setName(name.getText().toString());
+                        DbManager.user.setSurname(surname.getText().toString());
+                        if (photoChanged) {
+                            DbManager.user.setAvatar(true);
+                            avatarSave();
+                        }
+                        DbManager.write();
+                        finish();
+                        //Toast.makeText(getApplicationContext(), "Сохранено", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                        isRightSurname(surname.getText().toString());
+
+
+                break;
+            }
+
+            case R.id.bExit: {
+                finish();
+//                DbManager.signOut();
+//                Intent intent = new Intent(ProfileEditorActivity.this, LoginActivity.class);
+//                startActivity(intent);
+                break;
+            }
         }
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECT_IMAGE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    try {
+                        Bitmap bitmap;
+                        image.setImageBitmap(bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData()));
+                        photoChanged = true;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
-        //map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
-        map.setMinZoomPreference(10);
-
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        String[] permissions = new String[]{
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.INTERNET};
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, permissions, RESULT_FIRST_USER);
-            return;
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(), "Отмена", Toast.LENGTH_SHORT).show();
+            }
         }
+    }
 
-        fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+    public void avatarSave() {
+        try {
+            image.setDrawingCacheEnabled(true);
+            image.buildDrawingCache();
+            Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            UploadTask uploadTask = mountainsRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                }
+            });
+        }
+        catch (Exception e){
+            Toast.makeText(this,"Сервис временно не работает",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void avatarDownload() {
+        new DbManager(this).downloadPhoto();
+    }
+
+    public void newPass(String email, String pass, final String newPass){
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(email, pass);
+
+        DbManager.users.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            addMarker(location);
-                            saveLastLocation(location);
-                            addFriendsMarkers();
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            DbManager.users.updatePassword(newPass).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+
+                                    } else {
+
+                                    }
+                                }
+                            });
+                        } else {
+
                         }
                     }
                 });
-
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if (locationManager != null) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
-        }
-
-        GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Boolean tag = (Boolean) marker.getTag();
-
-                if (tag == null) {
-                    return true;
-                }
-
-                if (tag) {
-                    marker.setTag(false);
-                    marker.hideInfoWindow();
-
-                    return false;
-                }
-
-                marker.setTag(true);
-                marker.showInfoWindow();
-
-                return false;
-            }
-        };
-    }
-
-    private void saveLastLocation(Location location) {
-        DbManager.saveCoordinats(location.getLatitude(), location.getLongitude());
-    }
-
-    private void addFriendsMarkers() {
-        DbManager manager = new DbManager(this);
-        manager.readCoordinats();
-
-        /*LatLng p = new LatLng(54.2f, 48.388101);
-        if (friendVisability(p.latitude, p.longitude)) {
-            Marker friendMarker = map.addMarker(new MarkerOptions()
-                    .position(p)
-                    .title("друг")
-                    .snippet("захардкоженный")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-            );
-            friendMarker.setTag(false);
-        }*/
-/*
-        LatLng pos = new LatLng(54.19f, 48.2f);
-        if (friendVisability(pos.latitude, pos.longitude)) {
-            map.addMarker(new MarkerOptions()
-                    .position(pos)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-            );
-        }*/
-
-        /*for (Coordinats coordinats : DbManager.coordinats) {
-            LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
-            if (friendVisability(position.latitude, position.longitude)) {
-                map.addMarker(new MarkerOptions()
-                        .position(position)
-                        .title("")
-                        .snippet("")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                );
-            }
-        }*/
-    }
-
-    private boolean friendVisability(final double flat, final double flng) {
-        final double lat = userMarker.getPosition().latitude;
-        final double lng = userMarker.getPosition().longitude;
-        final double EARTH_RADIUS = 6371;
-
-        final double dlat = deg2rad(lat - flat);
-        final double dlng = deg2rad(lng - flng);
-
-        final double a = sin(dlat / 2) * sin(dlat / 2) + cos(deg2rad(flat))
-                * cos(deg2rad(lat)) * sin(dlng / 2) * sin(dlng / 2);
-        final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-
-        /*double dLat  = rad(p2.lat() - p1.lat());
-        var dLong = rad(p2.lng() - p1.lng());
-
-        var a = sin(dLat/2) * sin(dLat/2) +
-                cos(rad(p1.lat())) * cos(rad(p2.lat())) * sin(dLong/2) * sin(dLong/2);
-        var c = 2 * atan2(sqrt(a), sqrt(1-a));
-        var d = R * c;
-
-        return d.toFixed(3);*/
-
-        // получаем расстояние в километрах
-        return c * EARTH_RADIUS < VISABILITY_RADIUS / 1000;
-
-    }
-
-    /**
-     * Преобразует значение из градусов в радианы
-     *
-     * @param degree
-     * @return
-     */
-    @SuppressWarnings("JavaDoc")
-    private static double deg2rad(final double degree) {
-        return degree * (Math.PI / 180);
-    }
-
-    public void addMarker(Location location) {
-        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-
-        Drawable drawPh = photo.getDrawable();
-        if (drawPh == null) {
-            userMarker = map.addMarker(new MarkerOptions()
-                    .position(position)
-                    .title(DbManager.user.getName())
-                    .snippet(DbManager.user.getSurname())
-
-            );
-        } else {
-            userMarker = map.addMarker(new MarkerOptions()
-                    .position(position)
-                    .title(DbManager.user.getName())
-                    .snippet(DbManager.user.getSurname())
-                    //.icon(BitmapDescriptorFactory
-                    //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
-                    //)
-                    .icon(BitmapDescriptorFactory
-                            .fromBitmap(drawableToBitmap(drawPh))
-                    )
-            );
-        }
-
-        userMarker.setTag(false);
-
-        map.moveCamera(CameraUpdateFactory.newLatLng(position));
-
-        map.addCircle(new CircleOptions()
-                .center(position)
-                .radius(VISABILITY_RADIUS)
-                .strokeColor(Color.BLACK)
-                .fillColor(/*R.color.colorVisibilityRadius*/0x10ff0000)
-                .strokeWidth(2));
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-        addMarker(location);
-        map.moveCamera(CameraUpdateFactory.newLatLng(position));
-    }
-
-    private static Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap;
-
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if (bitmapDrawable.getBitmap() != null) {
-                bitmap = bitmapDrawable.getBitmap();
-
-                bitmap = scaleBitmap(bitmap);
-                return bitmap;
-            }
-        }
-
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            // Single color bitmap will be created of 1x1 pixel
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        } else {
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        }
-
-        bitmap = scaleBitmap(bitmap);
-
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        bitmap.setDensity(10);
-        return bitmap;
-    }
-
-    private static Bitmap scaleBitmap(Bitmap bitmap) {
-        return Bitmap.createScaledBitmap(bitmap, 120, 120, false);
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
 
     }
 
     @Override
     public void onFriendsCoordLoad(Coordinats coord) {
-        /*for (Coordinats coordinats : DbManager.coordinats) {
-            LatLng position = new LatLng(coordinats.getLatitude(), coordinats.getLongitude());
-            if (friendVisability(position.latitude, position.longitude)) {
-                map.addMarker(new MarkerOptions()
-                        .position(position)
-                        .title("")
-                        .snippet("")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                );
-            }
-        }*/
-        LatLng position = new LatLng(coord.getLatitude(), coord.getLongitude());
-
-        boolean flag_visible = false;
-        for (String fId : DbManager.friendsId) {
-            if (fId.equals(coord.getId())) {
-                flag_visible = true;
-                break;
-            }
-        }
-
-        if (friendVisability(position.latitude, position.longitude) && flag_visible) {
-            DbManager.coordinats.add(coord);
-
-            map.addMarker(new MarkerOptions()
-                    .position(position)
-                    //.title(DbManager.friends.get(coord.getId()))
-                    .snippet("")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-            );
-        }
+        //do nothing
     }
 
     @Override
     public void onPhotoDownload(byte[] bytes) {
-        photo.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-
-        /*Drawable drawPh = photo.getDrawable();
-        if (drawPh != null) {
-            userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(drawPh)));
-        }*/
-
-        userMarker.setIcon(BitmapDescriptorFactory
-                .fromBitmap(Bitmap.createScaledBitmap(
-                        BitmapFactory.decodeByteArray(
-                                bytes, 0, bytes.length), 120, 120, false)
-                ));
+        image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
     }
 }
