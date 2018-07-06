@@ -20,8 +20,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -39,6 +43,7 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
 
     EditText name;
     EditText surname;
+    EditText passwrd;
     EditText passwrd1;
     EditText passwrd2;
     ImageView image;
@@ -53,28 +58,31 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_editor);
 
-        name = (EditText) findViewById(R.id.etNewName);
-        surname = (EditText) findViewById(R.id.etNewSurname);
-        passwrd1 = (EditText) findViewById(R.id.etNewPasswrd1);
-        passwrd2 = (EditText) findViewById(R.id.etNewPasswrd2);
+        name=(EditText)findViewById(R.id.etNewName);
+        surname=(EditText)findViewById(R.id.etNewSurname);
+        passwrd=(EditText)findViewById(R.id.etPasswrd);
+        passwrd1=(EditText)findViewById(R.id.etNewPasswrd1);
+        passwrd2=(EditText)findViewById(R.id.etNewPasswrd2);
         name.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
         surname.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
+        passwrd.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
         passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
         passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorBasic), PorterDuff.Mode.SRC_ATOP);
-        image = (ImageView) findViewById(R.id.imageV);
+        image=(ImageView) findViewById(R.id.imageV);
 
         name.setText(DbManager.user.getName());
         surname.setText(DbManager.user.getSurname());
-        if (DbManager.user.getAvatar())
+        if(DbManager.user.getAvatar())
             avatarDownload();
 
         name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if (isRightName(name.getText().toString())) {
+                    if(isRightName(name.getText().toString())){
                         name.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    } else {
+                    }
+                    else{
                         name.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -85,10 +93,25 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if (isRightSurname(surname.getText().toString())) {
+                    if(isRightSurname(surname.getText().toString())){
                         surname.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    } else {
+                    }
+                    else{
                         surname.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
+                    }
+                }
+            }
+        });
+
+        passwrd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus == false) {
+                    if(isRightPassword(passwrd.getText().toString())) {
+                        passwrd.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    }
+                    else{
+                        passwrd.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
             }
@@ -98,9 +121,10 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if (isRightPassword(passwrd1.getText().toString())) {
+                    if(isRightPassword(passwrd1.getText().toString())) {
                         passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    } else {
+                    }
+                    else{
                         passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -111,12 +135,11 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus == false) {
-                    if (passwrd2.getText().toString().equals(passwrd1.getText().toString())) {
-                        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
+                    if(passwrd2.getText().toString().equals(passwrd1.getText().toString())){
                         passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorRight), PorterDuff.Mode.SRC_ATOP);
-                    } else {
+                    }
+                    else {
                         Toast.makeText(ProfileEditorActivity.this, "Пароль не совпадает", Toast.LENGTH_SHORT).show();
-                        passwrd1.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                         passwrd2.getBackground().setColorFilter(getResources().getColor(R.color.colorWrong), PorterDuff.Mode.SRC_ATOP);
                     }
                 }
@@ -194,8 +217,8 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
         return matcher.find();
     }
 
-    public void onClick(View view) {
-        switch (view.getId()) {
+    public void onClick(View view){
+        switch (view.getId()){
 
             case R.id.bChangePhoto: {
                 Intent intent = new Intent();
@@ -206,8 +229,18 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
             }
 
             case R.id.bAccept: {
-                if (isRightName(name.getText().toString()))
-                    if (isRightSurname(surname.getText().toString())) {
+                if(passwrd.getText().toString().equals("")== false || passwrd1.getText().toString().equals("")== false || passwrd2.getText().toString().equals("")== false) {
+                    if(isRightPassword(passwrd.getText().toString())) {
+                        if (isRightPassword(passwrd1.getText().toString(), passwrd2.getText().toString())) {
+                            newPass(DbManager.user.getEmail(), passwrd.getText().toString(), passwrd1.getText().toString());
+                        }
+                        else return;
+                    }
+                    else return;
+
+                }
+                if(isRightName(name.getText().toString()))
+                    if(isRightSurname(surname.getText().toString())) {
                         DbManager.user.setName(name.getText().toString());
                         DbManager.user.setSurname(surname.getText().toString());
                         if (photoChanged) {
@@ -217,8 +250,11 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
                         DbManager.write();
                         finish();
                         //Toast.makeText(getApplicationContext(), "Сохранено", Toast.LENGTH_SHORT).show();
-                    } else
+                    }
+                    else
                         isRightSurname(surname.getText().toString());
+
+
                 break;
             }
 
@@ -276,14 +312,34 @@ public class ProfileEditorActivity extends AppCompatActivity implements View.OnC
     }
 
     public void avatarDownload() {
-        //image.setImageURI(DbManager.getAvatarUri());
-
         new DbManager(this).downloadPhoto();
+    }
 
-        /*Glide.with(this)
-                .using(new FirebaseImageLoader())
-                .load(DbManager.getAvatarStorageReference())
-                .into(image);*/
+    public void newPass(String email, String pass, final String newPass){
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(email, pass);
+
+        DbManager.users.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            DbManager.users.updatePassword(newPass).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+
+                                    } else {
+
+                                    }
+                                }
+                            });
+                        } else {
+
+                        }
+                    }
+                });
+
     }
 
     @Override

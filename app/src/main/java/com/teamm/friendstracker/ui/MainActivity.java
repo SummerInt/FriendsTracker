@@ -4,6 +4,7 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.Marker;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.teamm.friendstracker.model.entity.Coordinats;
 import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.view.MapView;
@@ -15,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.camera2.DngCreator;
@@ -25,6 +27,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -83,7 +86,9 @@ public class MainActivity extends AppCompatActivity
 
     View header;
 
-    ImageView photo;
+    public static Switch switch_button;
+
+    RoundedImageView photo;
     int photoRes;
 
     GoogleMap map;
@@ -200,14 +205,18 @@ public class MainActivity extends AppCompatActivity
         MenuItemCompat.setActionView(item, R.layout.switch_item);
         RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
 
-        Switch switch_button = (Switch) notifCount.findViewById(R.id.switchForAppBar);
+        switch_button = (Switch) notifCount.findViewById(R.id.switchForAppBar);
 
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked) {
+                if(isChecked){
+                    DbManager.user.setOnline(true);
+                    DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы показываете свое местоположение", Toast.LENGTH_SHORT).show();
-                } else {
+                }else{
+                    DbManager.user.setOnline(false);
+                    DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы не показываете свое местоположение", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -407,7 +416,8 @@ public class MainActivity extends AppCompatActivity
     public void addMarker(Location location) {
         LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 
-        if (photo.getDrawable() == null) {
+        Drawable drawPh = photo.getDrawable();
+        if (drawPh == null) {
             userMarker = map.addMarker(new MarkerOptions()
                     .position(position)
                     .title(DbManager.user.getName())
@@ -423,7 +433,7 @@ public class MainActivity extends AppCompatActivity
                     //        .fromBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.degault_prof_photo))
                     //)
                     .icon(BitmapDescriptorFactory
-                            .fromBitmap(drawableToBitmap(photo.getDrawable()))
+                            .fromBitmap(drawableToBitmap(drawPh))
                     )
             );
         }
@@ -534,6 +544,15 @@ public class MainActivity extends AppCompatActivity
     public void onPhotoDownload(byte[] bytes) {
         photo.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
 
-        userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(photo.getDrawable())));
+        /*Drawable drawPh = photo.getDrawable();
+        if (drawPh != null) {
+            userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(drawPh)));
+        }*/
+
+        userMarker.setIcon(BitmapDescriptorFactory
+                .fromBitmap(Bitmap.createScaledBitmap(
+                        BitmapFactory.decodeByteArray(
+                                bytes, 0, bytes.length), 120, 120, false)
+                ));
     }
 }
