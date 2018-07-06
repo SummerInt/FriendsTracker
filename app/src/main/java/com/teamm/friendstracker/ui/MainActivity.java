@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity
 
     View header;
 
+    public static Switch switch_button;
+
     RoundedImageView photo;
     int photoRes;
 
@@ -203,14 +205,18 @@ public class MainActivity extends AppCompatActivity
         MenuItemCompat.setActionView(item, R.layout.switch_item);
         RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
 
-        Switch switch_button = (Switch) notifCount.findViewById(R.id.switchForAppBar);
+        switch_button = (Switch) notifCount.findViewById(R.id.switchForAppBar);
 
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked) {
+                if(isChecked){
+                    DbManager.user.setOnline(true);
+                    DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы показываете свое местоположение", Toast.LENGTH_SHORT).show();
-                } else {
+                }else{
+                    DbManager.user.setOnline(false);
+                    DbManager.write();
                     Toast.makeText(MainActivity.this, "Вы не показываете свое местоположение", Toast.LENGTH_SHORT).show();
                 }
             }

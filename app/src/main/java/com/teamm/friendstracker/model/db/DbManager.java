@@ -21,6 +21,7 @@ import com.teamm.friendstracker.model.entity.Coordinats;
 import com.teamm.friendstracker.model.entity.User;
 import com.teamm.friendstracker.ui.FriendActivity;
 import com.teamm.friendstracker.ui.FriendSearchActivity;
+import com.teamm.friendstracker.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +35,8 @@ public class DbManager {
     public static FirebaseUser users = mAuth.getInstance().getCurrentUser();
     public static User user = new User();
     public static User userFriend = new User();
+
+
 
     public static ArrayList<User> friends = new ArrayList<User>();
 
@@ -76,6 +79,8 @@ public class DbManager {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.child("Users").child(users.getUid()).getValue(User.class);
+                if(user.isOnline() && MainActivity.switch_button != null)
+                    MainActivity.switch_button.setChecked(true);
             }
 
             @Override
@@ -85,6 +90,26 @@ public class DbManager {
 
         });
         DbManager.readFriendId();
+    }
+
+    public static void deleteFriend(User us){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        int index = friends.indexOf(us);
+        String usId = friendsId.get(index);
+        DatabaseReference myRef = database.getReference("FriendsTracker");
+        myRef.child("Friends").child(users.getUid()).child(usId).removeValue();
+
+        //friends.remove(index);
+        //friendsId.remove(index);
+        //idEmailFriends.remove(index);
+
+        friends.clear();
+        friendsId.clear();
+        idEmailFriends.clear();
+
+        readFriendId();
+        readFriends();
+
     }
 
     public static void readFriendId(){
@@ -131,6 +156,7 @@ public class DbManager {
                 String id = dataSnapshot.getKey();
                 if(friendsId.indexOf(id)!=-1) {
                     friends.add(userFriend);
+                    FriendActivity.friends.add(userFriend);
                     FriendActivity.loadFriends();
                     idEmailFriends.put(id,userFriend.getEmail());
                 }

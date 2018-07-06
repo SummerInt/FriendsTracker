@@ -27,6 +27,8 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
 
     static RVFriendsAdapter adapter;
 
+    public static final ArrayList<User> friends = new ArrayList<User>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +42,8 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
 
         Button bAddFriend = (Button)findViewById(R.id.bAddFriend);
         bAddFriend.setOnClickListener(this);
+
+        loadFriends();
     }
 
     @Override
@@ -56,7 +60,8 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.delete:
-                        //Удаленпие друга тут
+                        DbManager.deleteFriend(DbManager.friends.get(index));
+                        loadFriends();
                         Toast.makeText(getApplicationContext(), "Удалено", Toast.LENGTH_SHORT).show();
                         return true;
                     default:
